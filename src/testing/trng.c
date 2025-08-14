@@ -14,16 +14,10 @@ int main(void) {
     struct gpiod_chip *chip;
     struct gpiod_line *line;
     int rv;
-    int lastval;
-    int count = 0;
     struct timespec last_time = {0, 0};
     uint64_t min_delta = UINT64_MAX;
     uint64_t max_delta = 0;
-    uint64_t last_delta = 0;
     uint64_t delta_ns = 0;
-    uint64_t timestamp = 0;
-    uint64_t last_timestamp = 0;
-    uint64_t total = 0;
 
     chip = gpiod_chip_open_by_name(GPIO_CHIP);
     if (!chip) {
@@ -63,21 +57,15 @@ int main(void) {
 
 	    if (last_time.tv_sec != 0) {
 	      delta_ns = (event.ts.tv_sec - last_time.tv_sec) * 1000000000ULL + (event.ts.tv_nsec - last_time.tv_nsec);
-	      total = (event.ts.tv_sec) * 1000000000ULL + (event.ts.tv_nsec);
 
               if (delta_ns < min_delta) min_delta = delta_ns;
               if (delta_ns > max_delta) max_delta = delta_ns;
 
-	      //printf ("%ld	%ld	%ld	%ld\n", delta_ns, last_delta, min_delta, max_delta);
-	      //printf ("%ld	%ld	%ld\n", delta_ns, event.ts.tv_sec, event.ts.tv_nsec);
 	      printf ("%ld\n", delta_ns);
-	      //printf ("%ld%ld\n", event.ts.tv_sec, event.ts.tv_nsec);
 
 	      fflush(stdout);
 	    }
             last_time = event.ts;
-	    last_timestamp = timestamp;
-	    last_delta = delta_ns;
         }
     }
 

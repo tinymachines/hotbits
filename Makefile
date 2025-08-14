@@ -8,26 +8,39 @@ SRC_DIR = src/testing
 BUILD_DIR = build
 BIN_DIR = bin
 
-# Source files
-SOURCES = $(SRC_DIR)/trng.c \
-          $(SRC_DIR)/filter.c \
-          $(SRC_DIR)/rng-extractor.c \
-          $(SRC_DIR)/vomneu.c \
-          $(SRC_DIR)/xor-groups.c
+# Check if libgpiod is available
+HAS_GPIOD := $(shell pkg-config --exists libgpiod && echo yes || echo no)
 
-# Object files
-OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SOURCES))
+# Source files that don't require GPIO
+NON_GPIO_SOURCES = $(SRC_DIR)/filter.c \
+                   $(SRC_DIR)/rng-extractor.c \
+                   $(SRC_DIR)/xor-groups.c
+
+# Source files that require GPIO
+GPIO_SOURCES = $(SRC_DIR)/trng.c \
+               $(SRC_DIR)/vomneu.c
 
 # Executable names
-EXECUTABLES = $(BIN_DIR)/trng \
-              $(BIN_DIR)/filter \
-              $(BIN_DIR)/rng-extractor \
-              $(BIN_DIR)/vomneu \
-              $(BIN_DIR)/xor-groups \
-              $(BIN_DIR)/transform
+NON_GPIO_EXECUTABLES = $(BIN_DIR)/filter \
+                       $(BIN_DIR)/rng-extractor \
+                       $(BIN_DIR)/xor-groups \
+                       $(BIN_DIR)/transform
+
+ifeq ($(HAS_GPIOD),yes)
+    ALL_EXECUTABLES = $(NON_GPIO_EXECUTABLES) $(BIN_DIR)/trng $(BIN_DIR)/vomneu
+else
+    ALL_EXECUTABLES = $(NON_GPIO_EXECUTABLES)
+endif
 
 # Default target
-all: directories $(EXECUTABLES)
+all: directories $(ALL_EXECUTABLES)
+	@if [ "$(HAS_GPIOD)" = "no" ]; then \
+		echo ""; \
+		echo "WARNING: libgpiod not found. GPIO-dependent programs (trng, vomneu) were not built."; \
+		echo "To build these programs, install libgpiod-dev:"; \
+		echo "  sudo apt-get install libgpiod-dev"; \
+		echo ""; \
+	fi
 
 # Create necessary directories
 directories:
@@ -36,7 +49,12 @@ directories:
 
 # Build trng (requires gpiod library)
 $(BIN_DIR)/trng: $(SRC_DIR)/trng.c
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+	@if [ "$(HAS_GPIOD)" = "yes" ]; then \
+		echo "Building trng..."; \
+		$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS); \
+	else \
+		echo "Skipping trng (libgpiod not available)"; \
+	fi
 
 # Build filter
 $(BIN_DIR)/filter: $(SRC_DIR)/filter.c
@@ -46,9 +64,14 @@ $(BIN_DIR)/filter: $(SRC_DIR)/filter.c
 $(BIN_DIR)/rng-extractor: $(SRC_DIR)/rng-extractor.c
 	$(CC) $(CFLAGS) $< -o $@
 
-# Build vomneu
+# Build vomneu (requires gpiod library)
 $(BIN_DIR)/vomneu: $(SRC_DIR)/vomneu.c
-	$(CC) $(CFLAGS) $< -o $@
+	@if [ "$(HAS_GPIOD)" = "yes" ]; then \
+		echo "Building vomneu..."; \
+		$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS); \
+	else \
+		echo "Skipping vomneu (libgpiod not available)"; \
+	fi
 
 # Build xor-groups
 $(BIN_DIR)/xor-groups: $(SRC_DIR)/xor-groups.c
@@ -71,4 +94,20 @@ install-deps:
 	@echo "Installing libgpiod development libraries..."
 	sudo apt-get update && sudo apt-get install -y libgpiod-dev
 
-.PHONY: all clean directories run install-deps
+# Check dependencies
+check-deps:
+	@echo "Checking dependencies..."
+	@echo -n "libgpiod: "
+	@if [ "$(HAS_GPIOD)" = "yes" ]; then \
+		echo "✓ installed"; \
+	else \
+		echo "✗ not installed (run 'make install-deps' to install)"; \
+	fi
+	@echo -n "gcc: "
+	@if which gcc > /dev/null; then \
+		echo "✓ installed"; \
+	else \
+		echo "✗ not installed"; \
+	fi
+
+.PHONY: all clean directories run install-deps check-deps
