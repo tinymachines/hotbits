@@ -6,6 +6,10 @@ obj/
 *.so
 *.a
 
+# TRNG binaries
+src/trng/trng
+src/trng/trng_test
+
 # Python
 __pycache__/
 *.py[cod]
