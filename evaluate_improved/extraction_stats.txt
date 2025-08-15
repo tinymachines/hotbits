@@ -1,9 +1,0 @@
-# Input samples: 12321
-# Output bits: 492
-# Compression: 0.040 bits/sample
-# Bit balance: 0.5020 (ideal: 0.5000)
-# Randomness tests:
-#   frequency: PASS
-#   runs: PASS
-#   chi_square: PASS
-# Overall: PASS

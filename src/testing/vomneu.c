@@ -45,7 +45,6 @@ int main(void) {
     struct gpiod_chip *chip;
     struct gpiod_line *line;
     int rv;
-    struct timing_data measurements[SAMPLE_SIZE];
     uint8_t raw_bits[SAMPLE_SIZE];
     uint8_t debiased_bits[SAMPLE_SIZE/4];
     size_t debiased_size;
@@ -93,8 +92,6 @@ int main(void) {
                 uint64_t delta_ns = (event.ts.tv_sec - last_time.tv_sec) * 1000000000ULL + 
                                   (event.ts.tv_nsec - last_time.tv_nsec);
                 
-                measurements[count].timestamp = event.ts.tv_sec * 1000000000ULL + event.ts.tv_nsec;
-                measurements[count].delta = delta_ns;
                 raw_bits[count] = (delta_ns % 2);
 
                 if (delta_ns < min_delta) min_delta = delta_ns;
