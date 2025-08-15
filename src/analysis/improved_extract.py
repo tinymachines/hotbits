@@ -17,9 +17,14 @@ class ImprovedTRNGPipeline:
         self.calibration_samples = 1000
         
     def estimate_sample_rate(self, data):
-        """Estimate sampling rate from data"""
-        mean_interval_ms = np.mean(data)
-        self.sample_rate = 1000.0 / mean_interval_ms  # Hz
+        """Estimate sampling rate from data (assuming data is in nanoseconds)"""
+        mean_interval_ns = np.mean(np.abs(data))
+        if mean_interval_ns > 0:
+            # Convert nanoseconds to seconds for Hz calculation
+            mean_interval_s = mean_interval_ns / 1e9
+            self.sample_rate = 1.0 / mean_interval_s  # Hz
+        else:
+            self.sample_rate = 1.0  # Default fallback
         return self.sample_rate
     
     def remove_periodic_signals(self, data):
@@ -301,20 +306,24 @@ def main():
             print(f"# Error: No bits produced from {len(data)} samples", file=sys.stderr)
     
     # Output
-    if args.output == 'binary':
-        # Pack bits into bytes
-        if len(output_bits) % 8 != 0:
-            output_bits = np.pad(output_bits, (0, 8 - len(output_bits) % 8))
-        bytes_data = np.packbits(output_bits)
-        sys.stdout.buffer.write(bytes_data.tobytes())
-    elif args.output == 'hex':
-        if len(output_bits) % 8 != 0:
-            output_bits = np.pad(output_bits, (0, 8 - len(output_bits) % 8))
-        bytes_data = np.packbits(output_bits)
-        print(bytes_data.tobytes().hex())
-    elif args.output == 'bits':
-        for bit in output_bits:
-            sys.stdout.write(str(bit))
+    if len(output_bits) > 0:
+        if args.output == 'binary':
+            # Pack bits into bytes
+            if len(output_bits) % 8 != 0:
+                output_bits = np.pad(output_bits, (0, 8 - len(output_bits) % 8))
+            bytes_data = np.packbits(output_bits.astype(np.uint8))
+            sys.stdout.buffer.write(bytes_data.tobytes())
+        elif args.output == 'hex':
+            if len(output_bits) % 8 != 0:
+                output_bits = np.pad(output_bits, (0, 8 - len(output_bits) % 8))
+            bytes_data = np.packbits(output_bits.astype(np.uint8))
+            print(bytes_data.tobytes().hex())
+        elif args.output == 'bits':
+            for bit in output_bits:
+                sys.stdout.write(str(int(bit)))
+    else:
+        print("# Error: No output bits generated", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
