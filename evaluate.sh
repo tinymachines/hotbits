@@ -7,6 +7,9 @@ TMP="./working/evaluate-$(date +%s).txt"
 DST="./evaluate"
 
 cat ./data/events*.txt >${TMP}
+./run_full_test.sh ${TMP}
+
+exit
 
 cat ${TMP} | tee \
 	>(python src/analysis/analyze.py >${DST}/analyze.txt) \

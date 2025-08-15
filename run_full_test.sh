@@ -8,9 +8,9 @@ echo ""
 
 # Input and output files
 INPUT_FILE="${1:-src/analysis/test-data.txt}"
-OUTPUT_DIR="evaluate_improved"
-BINARY_FILE="$OUTPUT_DIR/final_random.bin"
-STATS_FILE="$OUTPUT_DIR/final_stats.txt"
+OUTPUT_DIR="working"
+BINARY_FILE="$OUTPUT_DIR/random.bin"
+STATS_FILE="$OUTPUT_DIR/stats.txt"
 
 # Create output directory
 mkdir -p $OUTPUT_DIR
@@ -41,7 +41,8 @@ if command -v dieharder &> /dev/null; then
     echo "Step 4: Running Dieharder tests (this may take a while)..."
     echo "----------------------------------------"
     # Run a subset of dieharder tests for speed
-    cat $BINARY_FILE | dieharder -g 200 -d 0 -d 1 -d 2 -d 3 -d 4 2>&1 | head -50
+    dieharder -a -f $BINARY_FILE
+    #cat $BINARY_FILE | dieharder -g 200 -d 0 -d 1 -d 2 -d 3 -d 4 2>&1 | head -50
     echo ""
 else
     echo "Step 4: Dieharder not installed (install with: sudo apt-get install dieharder)"
