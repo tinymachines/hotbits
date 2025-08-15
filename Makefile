@@ -110,4 +110,41 @@ check-deps:
 		echo "✗ not installed"; \
 	fi
 
-.PHONY: all clean directories run install-deps check-deps
+# Test tools targets
+test-tools: nist-sts install-dieharder
+	@echo ""
+	@echo "Test tools setup complete!"
+	@echo ""
+	@./scripts/setup_test_tools.sh
+
+# Build NIST Statistical Test Suite
+nist-sts:
+	@echo "Building NIST Statistical Test Suite..."
+	@if [ ! -f repos/sts-2.1.2/sts-2.1.2/assess ]; then \
+		cd repos/sts-2.1.2/sts-2.1.2 && make clean 2>/dev/null; make; \
+	else \
+		echo "NIST STS already built"; \
+	fi
+
+# Install dieharder from package manager
+install-dieharder:
+	@echo "Checking for dieharder..."
+	@if ! command -v dieharder >/dev/null 2>&1; then \
+		echo "Installing dieharder..."; \
+		if [ -f /etc/debian_version ]; then \
+			sudo apt-get update && sudo apt-get install -y dieharder; \
+		elif [ -f /etc/redhat-release ]; then \
+			sudo yum install -y dieharder || sudo dnf install -y dieharder; \
+		else \
+			echo "Please install dieharder manually for your system"; \
+		fi; \
+	else \
+		echo "Dieharder already installed"; \
+	fi
+
+# Run full test suite
+test-full: all test-tools
+	@echo "Running full randomness test suite..."
+	./run_full_test_simple.sh
+
+.PHONY: all clean directories run install-deps check-deps test-tools nist-sts install-dieharder test-full

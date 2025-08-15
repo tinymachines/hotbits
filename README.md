@@ -24,19 +24,23 @@ sudo apt-get install build-essential libgpiod-dev python3-pip
 
 # Install Python dependencies
 pip install -r requirements.txt
+
+# Build all components including test tools
+make all
+make test-tools  # Builds NIST STS and installs Dieharder
 ```
 
 ### Basic Usage
 
 ```bash
-# Build the C programs
-make all
-
 # Generate random data from test file
 cat src/analysis/test-data.txt | python3 src/analysis/improved_extract.py > random.bin
 
 # Run full evaluation pipeline
 ./run_full_test_simple.sh src/analysis/test-data.txt
+
+# Or use the Makefile for complete testing
+make test-full
 ```
 
 ## 📊 Performance Metrics
@@ -216,11 +220,56 @@ Contributions are welcome! Please read our contributing guidelines and submit pu
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments & Credits
 
-- Linux kernel's `/dev/random` implementation for inspiration
-- The cryptographic community for statistical test methodologies
-- Contributors to libgpiod for GPIO access tools
+### Test Suites
+
+#### NIST Statistical Test Suite (STS)
+- **Version**: 2.1.2
+- **Source**: [NIST Computer Security Resource Center](https://csrc.nist.gov/projects/random-bit-generation/documentation-and-software)
+- **License**: Public Domain (US Government Work)
+- **Description**: A statistical package consisting of 15 tests developed to test the randomness of binary sequences produced by hardware or software based cryptographic random or pseudorandom number generators.
+- **Citation**: Rukhin, A., et al. (2010). "A Statistical Test Suite for Random and Pseudorandom Number Generators for Cryptographic Applications." NIST Special Publication 800-22, Revision 1a.
+
+#### Dieharder Random Number Test Suite
+- **Version**: 3.31.2
+- **Author**: Robert G. Brown (Duke University)
+- **Source**: [Dieharder Project](https://webhome.phy.duke.edu/~rgb/General/dieharder.php)
+- **GitHub**: [eddelbuettel/dieharder](https://github.com/eddelbuettel/dieharder)
+- **License**: GPL v2
+- **Description**: An extended and improved version of the DIEHARD tests, providing a comprehensive battery of tests for random number generators.
+- **Citation**: Brown, R.G., Eddelbuettel, D., and Bauer, D. "Dieharder: A Random Number Test Suite."
+
+### Libraries and Tools
+
+- **libgpiod**: Modern Linux GPIO character device library
+  - Authors: Bartosz Golaszewski and contributors
+  - License: LGPL-2.1
+  - [GitHub](https://github.com/brgl/libgpiod)
+
+- **NumPy & SciPy**: Scientific computing libraries for Python
+  - License: BSD-3-Clause
+  - Essential for signal processing and statistical analysis
+
+### Algorithms and Techniques
+
+- **Von Neumann Extractor**: Classical debiasing algorithm (1951)
+  - Paper: "Various techniques used in connection with random digits"
+  - Published in: National Bureau of Standards Applied Mathematics Series, 12:36-38
+
+- **SHA-3 (Keccak)**: Cryptographic hash function for final whitening
+  - NIST FIPS 202 standard
+  - Designers: Guido Bertoni, Joan Daemen, Michaël Peeters, and Gilles Van Assche
+
+### Inspiration
+
+- Linux kernel's `/dev/random` implementation for entropy collection strategies
+- Intel's RdRand instruction documentation for hardware RNG design principles
+- The cryptographic community for continuous improvements in randomness testing
+
+### Contributors
+
+Special thanks to all contributors who have helped improve this project through code, testing, and feedback.
 
 ---
 
