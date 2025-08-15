@@ -18,9 +18,9 @@ mkdir -p $OUTPUT_DIR
 # Step 1: Extract random bits with statistics
 echo "Step 1: Extracting random bits from $INPUT_FILE..."
 echo "----------------------------------------"
-cat $INPUT_FILE | python3 src/analysis/improved_extract.py --stats 2>&1 | \
-    tee >(grep "^#" > $STATS_FILE) | \
-    grep -v "^#" > $BINARY_FILE
+# Run twice: once for binary output, once for stats
+cat $INPUT_FILE | python3 src/analysis/improved_extract.py > $BINARY_FILE
+cat $INPUT_FILE | python3 src/analysis/improved_extract.py --stats 2>&1 | grep "^#" > $STATS_FILE
 
 cat $STATS_FILE
 echo ""
