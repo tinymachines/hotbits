@@ -40,35 +40,32 @@ echo ""
 if command -v dieharder &> /dev/null; then
     echo "Step 4: Running Dieharder tests (this may take a while)..."
     echo "----------------------------------------"
-    # Run a subset of dieharder tests for speed
+    # Use file input for dieharder (-a runs all tests)
     dieharder -a -f $BINARY_FILE
-    #cat $BINARY_FILE | dieharder -g 200 -d 0 -d 1 -d 2 -d 3 -d 4 2>&1 | head -50
     echo ""
 else
     echo "Step 4: Dieharder not installed (install with: sudo apt-get install dieharder)"
     echo ""
 fi
 
-# Step 5: If NIST STS is available, prepare for it
+# Step 5: If NIST STS is available, run it automatically
 if [ -f "repos/sts-2.1.2/sts-2.1.2/assess" ]; then
-    echo "Step 5: Preparing for NIST STS tests..."
+    echo "Step 5: Running NIST STS tests..."
     echo "----------------------------------------"
-    # NIST STS needs at least 1M bits (125000 bytes)
-    if [ $SIZE -lt 125000 ]; then
-        echo "File too small for NIST STS (need 125KB, have $(($SIZE/1024))KB)"
-        echo "Generating repeated data for testing..."
-        REPS=$((125000 / $SIZE + 1))
-        for i in $(seq 1 $REPS); do
-            cat $BINARY_FILE
-        done > $OUTPUT_DIR/nist_input.bin
-        echo "Created $(wc -c < $OUTPUT_DIR/nist_input.bin) bytes for NIST testing"
+    # Use the automated NIST script
+    if [ -f "scripts/run_nist_sts.sh" ]; then
+        chmod +x scripts/run_nist_sts.sh
+        ./scripts/run_nist_sts.sh $BINARY_FILE $OUTPUT_DIR/nist_results 2>&1 | tail -30
     else
-        cp $BINARY_FILE $OUTPUT_DIR/nist_input.bin
+        echo "NIST automation script not found, preparing manual instructions..."
+        # Fallback to manual instructions
+        if [ $SIZE -lt 125000 ]; then
+            echo "File too small for NIST STS (need 125KB, have $(($SIZE/1024))KB)"
+        fi
+        echo "To run manually: ./scripts/run_nist_sts.sh $BINARY_FILE"
     fi
-    echo "NIST input ready at $OUTPUT_DIR/nist_input.bin"
-    echo "To run NIST tests: cd repos/sts-2.1.2/sts-2.1.2/ && ./assess 1000000 < ../../../$OUTPUT_DIR/nist_input.bin"
 else
-    echo "Step 5: NIST STS not found at repos/sts-2.1.2/sts-2.1.2/assess"
+    echo "Step 5: NIST STS not found. Run 'make nist-sts' to build it."
 fi
 
 echo ""

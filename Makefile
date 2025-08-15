@@ -260,6 +260,13 @@ test-full: all
 		echo "$(RED)Test script not found$(NC)"; \
 	fi
 
+# Setup advanced test suites
+.PHONY: advanced-tests
+advanced-tests:
+	@echo "$(BLUE)Setting up advanced test suites...$(NC)"
+	@chmod +x scripts/setup_advanced_tests.sh
+	@./scripts/setup_advanced_tests.sh
+
 # Show help
 .PHONY: help
 help:
@@ -272,6 +279,7 @@ help:
 	@echo "  $(GREEN)install-deps$(NC)  - Install system dependencies"
 	@echo "  $(GREEN)nist-sts$(NC)      - Build NIST Statistical Test Suite"
 	@echo "  $(GREEN)install-dieharder$(NC) - Install Dieharder test suite"
+	@echo "  $(GREEN)advanced-tests$(NC) - Setup TestU01, PractRand, etc."
 	@echo "  $(GREEN)test$(NC)          - Run basic tests"
 	@echo "  $(GREEN)test-full$(NC)     - Run full test suite"
 	@echo "  $(GREEN)help$(NC)          - Show this help message"

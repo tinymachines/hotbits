@@ -1,0 +1,5 @@
+# Input samples: 326153
+# Output bits: 40816
+# Compression ratio: 0.125 bits/sample
+# Bit balance: 0.5076 (ideal: 0.5000)
+# Chi-square: 9.3572 (lower is better)
