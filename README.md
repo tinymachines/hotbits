@@ -1,6 +1,6 @@
 # Hotbits - True Random Number Generator
 
-![Hotbits Logo](logo.png)
+![Hotbits Logo](hotbits-small.png)
 
 ## 🎲 Overview
 
