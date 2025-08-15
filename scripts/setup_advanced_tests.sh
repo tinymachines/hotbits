@@ -39,22 +39,22 @@ setup_testu01() {
     if [ ! -f "$REPOS_DIR/TestU01.zip" ]; then
         echo "Downloading TestU01..."
         
-        # Try official source first
+        # Try GitHub mirror first (more reliable)
         if command_exists wget; then
-            wget -q -O "$REPOS_DIR/TestU01.zip" "$TESTU01_URL" 2>/dev/null
+            wget --no-check-certificate -q -O "$REPOS_DIR/TestU01.zip" "$TESTU01_ALT_URL" 2>/dev/null
         elif command_exists curl; then
-            curl -sL -o "$REPOS_DIR/TestU01.zip" "$TESTU01_URL" 2>/dev/null
+            curl -sL -o "$REPOS_DIR/TestU01.zip" "$TESTU01_ALT_URL" 2>/dev/null
         fi
         
-        # If official source fails, try GitHub mirror
-        if [ ! -f "$REPOS_DIR/TestU01.zip" ] || [ $(wc -c < "$REPOS_DIR/TestU01.zip") -lt 1000 ]; then
-            echo "Official source failed, trying GitHub mirror..."
+        # If GitHub fails, try official source
+        if [ ! -f "$REPOS_DIR/TestU01.zip" ] || [ $(wc -c < "$REPOS_DIR/TestU01.zip" 2>/dev/null || echo 0) -lt 1000 ]; then
+            echo "GitHub mirror failed, trying official source..."
             rm -f "$REPOS_DIR/TestU01.zip"
             
             if command_exists wget; then
-                wget -q -O "$REPOS_DIR/TestU01.zip" "$TESTU01_ALT_URL"
+                wget --no-check-certificate -q -O "$REPOS_DIR/TestU01.zip" "$TESTU01_URL" 2>/dev/null
             elif command_exists curl; then
-                curl -sL -o "$REPOS_DIR/TestU01.zip" "$TESTU01_ALT_URL"
+                curl -sL -o "$REPOS_DIR/TestU01.zip" "$TESTU01_URL" 2>/dev/null
             fi
         fi
     fi
@@ -161,25 +161,36 @@ setup_practrand() {
     
     PRACTRAND_DIR="$REPOS_DIR/PractRand"
     
-    if [ -f "$PRACTRAND_DIR/bin/RNG_test" ]; then
+    if [ -f "$PRACTRAND_DIR/bin/RNG_test" ] || [ -f "$PRACTRAND_DIR/RNG_test" ]; then
         echo -e "${GREEN}✓ PractRand already built${NC}"
         return 0
     fi
     
     if [ ! -d "$PRACTRAND_DIR" ]; then
         echo "Downloading PractRand..."
-        # PractRand doesn't have an official git repo, but there are mirrors
-        if command_exists wget; then
-            wget -q -O "$REPOS_DIR/PractRand.zip" "https://sourceforge.net/projects/pracrand/files/PractRand-0.95.zip/download" 2>/dev/null
-        fi
         
-        if [ -f "$REPOS_DIR/PractRand.zip" ]; then
-            cd "$REPOS_DIR"
-            unzip -q -o PractRand.zip
-            cd ..
-        else
-            # Try GitHub mirror
-            git clone --quiet https://github.com/planet36/PractRand.git "$PRACTRAND_DIR" 2>/dev/null
+        # Try GitHub mirror first (more reliable)
+        git clone --quiet --depth 1 https://github.com/planet36/PractRand.git "$PRACTRAND_DIR" 2>/dev/null
+        
+        # If GitHub fails, try sourceforge
+        if [ ! -d "$PRACTRAND_DIR" ]; then
+            echo "Trying SourceForge download..."
+            if command_exists wget; then
+                wget --no-check-certificate -O "$REPOS_DIR/PractRand0.95.zip" \
+                    "https://downloads.sourceforge.net/project/pracrand/PractRand-0.95.zip" 2>/dev/null
+            elif command_exists curl; then
+                curl -L -o "$REPOS_DIR/PractRand0.95.zip" \
+                    "https://downloads.sourceforge.net/project/pracrand/PractRand-0.95.zip" 2>/dev/null
+            fi
+            
+            if [ -f "$REPOS_DIR/PractRand0.95.zip" ]; then
+                cd "$REPOS_DIR"
+                unzip -q -o PractRand0.95.zip 2>/dev/null || echo "Unzip failed"
+                if [ -d "PractRand-0.95" ]; then
+                    mv PractRand-0.95 PractRand
+                fi
+                cd ..
+            fi
         fi
     fi
     
@@ -215,23 +226,35 @@ setup_ent() {
     
     ENT_DIR="$REPOS_DIR/ent"
     
-    if [ -f "$ENT_DIR/ent" ]; then
-        echo -e "${GREEN}✓ ENT already built${NC}"
+    if [ -f "$ENT_DIR/ent" ] || command_exists ent; then
+        echo -e "${GREEN}✓ ENT already available${NC}"
         return 0
     fi
     
-    if [ ! -d "$ENT_DIR" ]; then
-        echo "Downloading ENT..."
-        git clone --quiet https://github.com/willf/ent.git "$ENT_DIR" 2>/dev/null
-        
+    # First check if it's available via package manager
+    if ! command_exists ent; then
         if [ ! -d "$ENT_DIR" ]; then
-            # Try alternative source
+            echo "Downloading ENT..."
+            
+            # Download from fourmilab (original source)
             mkdir -p "$ENT_DIR"
             cd "$ENT_DIR"
+            
             if command_exists wget; then
-                wget -q "https://www.fourmilab.ch/random/random.zip" 2>/dev/null
-                unzip -q random.zip 2>/dev/null
+                wget --no-check-certificate -q "https://www.fourmilab.ch/random/random.zip" 2>/dev/null
+            elif command_exists curl; then
+                curl -sL -o random.zip "https://www.fourmilab.ch/random/random.zip" 2>/dev/null
             fi
+            
+            if [ -f "random.zip" ]; then
+                unzip -q random.zip 2>/dev/null
+                rm -f random.zip
+            else
+                # Try GitHub mirror (doesn't require auth)
+                cd ..
+                git clone --quiet --depth 1 https://github.com/psemiletov/ent.git "$ENT_DIR" 2>/dev/null || true
+            fi
+            
             cd ../../
         fi
     fi

@@ -264,8 +264,8 @@ test-full: all
 .PHONY: advanced-tests
 advanced-tests:
 	@echo "$(BLUE)Setting up advanced test suites...$(NC)"
-	@chmod +x scripts/setup_advanced_tests.sh
-	@./scripts/setup_advanced_tests.sh
+	@chmod +x scripts/setup_advanced_tests_simple.sh
+	@./scripts/setup_advanced_tests_simple.sh
 
 # Show help
 .PHONY: help
