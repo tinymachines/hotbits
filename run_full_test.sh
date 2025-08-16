@@ -52,17 +52,16 @@ fi
 if [ -f "repos/sts-2.1.2/sts-2.1.2/assess" ]; then
     echo "Step 5: Running NIST STS tests..."
     echo "----------------------------------------"
-    # Use the automated NIST script
-    if [ -f "scripts/run_nist_sts.sh" ]; then
+    # Use the simplified NIST script
+    if [ -f "scripts/run_nist_sts_simple.sh" ]; then
+        chmod +x scripts/run_nist_sts_simple.sh
+        ./scripts/run_nist_sts_simple.sh $BINARY_FILE $OUTPUT_DIR/nist_results 2>&1 | tail -40
+    elif [ -f "scripts/run_nist_sts.sh" ]; then
         chmod +x scripts/run_nist_sts.sh
         ./scripts/run_nist_sts.sh $BINARY_FILE $OUTPUT_DIR/nist_results 2>&1 | tail -30
     else
-        echo "NIST automation script not found, preparing manual instructions..."
-        # Fallback to manual instructions
-        if [ $SIZE -lt 125000 ]; then
-            echo "File too small for NIST STS (need 125KB, have $(($SIZE/1024))KB)"
-        fi
-        echo "To run manually: ./scripts/run_nist_sts.sh $BINARY_FILE"
+        echo "NIST automation script not found"
+        echo "To run manually: cd repos/sts-2.1.2/sts-2.1.2 && ./assess"
     fi
 else
     echo "Step 5: NIST STS not found. Run 'make nist-sts' to build it."

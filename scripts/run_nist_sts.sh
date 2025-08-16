@@ -60,9 +60,12 @@ if [ -f "/tmp/nist_input_$$.bin" ]; then
     REL_INPUT="../../..//tmp/nist_input_$$.bin"
 fi
 
+# Get absolute paths
+ABS_OUTPUT_DIR="$(cd "$(dirname "$OUTPUT_DIR")"; pwd)/$(basename "$OUTPUT_DIR")"
+
 # Prepare NIST STS input script
 # This automates the interactive prompts
-cat > "$OUTPUT_DIR/nist_input.txt" << EOF
+cat > "$ABS_OUTPUT_DIR/nist_input.txt" << EOF
 0
 $REL_INPUT
 1
@@ -72,7 +75,7 @@ $FILE_BITS
 EOF
 
 # Create test parameters (run all 15 tests)
-cat > "$OUTPUT_DIR/test_params.txt" << EOF
+cat > "$ABS_OUTPUT_DIR/test_params.txt" << EOF
 1
 1
 1
@@ -103,7 +106,7 @@ cd "$NIST_DIR"
 
 # Run NIST STS with automated input
 echo "Running tests..."
-cat "../../$OUTPUT_DIR/nist_input.txt" "../../$OUTPUT_DIR/test_params.txt" | ./assess $FILE_BITS 2>&1 | tee "../../$OUTPUT_DIR/nist_output.log"
+cat "$ABS_OUTPUT_DIR/nist_input.txt" "$ABS_OUTPUT_DIR/test_params.txt" | ./assess $FILE_BITS 2>&1 | tee "$ABS_OUTPUT_DIR/nist_output.log"
 
 # Go back to project root
 cd ../../../
