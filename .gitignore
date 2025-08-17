@@ -62,3 +62,9 @@ temp/
 *.bak
 
 data/*
+repos
+repos/*
+*.bin
+*.log
+logs
+*.txt

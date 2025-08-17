@@ -47,6 +47,7 @@ if [ $FILE_BITS -lt $MIN_BITS ]; then
     FILE_BITS=$((FILE_SIZE * 8))
     echo "Extended to $FILE_BITS bits"
 fi
+FILE_BITS=1000000
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
@@ -57,7 +58,8 @@ REL_INPUT="../../../$INPUT_FILE"
 
 # If we created a temp file, use that path
 if [ -f "/tmp/nist_input_$$.bin" ]; then
-    REL_INPUT="../../..//tmp/nist_input_$$.bin"
+    REL_INPUT="$(realpath ${TEMP_FILE})"
+    #REL_INPUT="../../..//tmp/nist_input_$$.bin"
 fi
 
 # Get absolute paths
@@ -106,7 +108,15 @@ cd "$NIST_DIR"
 
 # Run NIST STS with automated input
 echo "Running tests..."
-cat "$ABS_OUTPUT_DIR/nist_input.txt" "$ABS_OUTPUT_DIR/test_params.txt" | ./assess $FILE_BITS 2>&1 | tee "$ABS_OUTPUT_DIR/nist_output.log"
+
+#read -r COMMAND <<< cat << EOF
+#EOF
+echo "cat $ABS_OUTPUT_DIR/nist_input.txt $ABS_OUTPUT_DIR/test_params.txt | ./assess $FILE_BITS"
+#2>&1 \
+#| tee $ABS_OUTPUT_DIR/nist_output.log
+
+#${COMMAND}
+exit
 
 # Go back to project root
 cd ../../../
