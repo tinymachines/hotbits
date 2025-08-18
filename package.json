@@ -1,0 +1,30 @@
+{
+  "name": "hotbits-cli",
+  "version": "1.0.0",
+  "description": "HOTBITS - Thorium-based True Random Number Generator CLI",
+  "main": "hotbits-cli.js",
+  "bin": {
+    "hotbits": "./hotbits-cli.js"
+  },
+  "scripts": {
+    "test": "./scripts/hot.sh --quick --sample-count 1000",
+    "test:full": "./scripts/hot.sh --full",
+    "test:crypto": "./scripts/hot.sh --crypto",
+    "monitor": "node hotbits-cli.js monitor",
+    "generate": "node hotbits-cli.js generate"
+  },
+  "keywords": [
+    "trng",
+    "random",
+    "cryptography",
+    "thorium",
+    "raspberry-pi",
+    "hotbits"
+  ],
+  "author": "HOTBITS Team",
+  "license": "MIT",
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}

@@ -1,22 +1,14 @@
 #!/bin/bash
 
-# Don't exit on error immediately - we want to see what's happening
-# set -e
+set -e
 
 # Get timestamp as run ID
 RUN_ID=$(date +%s)
 echo "Starting evaluation run: ${RUN_ID}"
 
-# Setup absolute paths - handle being called from project root or scripts dir
-if [ -f "scripts/evaluate_improved.sh" ]; then
-    # Called from project root
-    PROJECT_DIR=$(pwd)
-else
-    # Called from scripts directory or elsewhere
-    SCRIPT_DIR=$(dirname "$(realpath "$0")")
-    PROJECT_DIR=$(realpath "${SCRIPT_DIR}/..")
-fi
-
+# Setup absolute paths
+SCRIPT_DIR=$(realpath "$(dirname "$0")")
+PROJECT_DIR=$(realpath "${SCRIPT_DIR}")
 WORKING_DIR="${PROJECT_DIR}/working"
 COMPLETE_DIR="${PROJECT_DIR}/complete"
 DATA_DIR="${DATA_DIR:-${PROJECT_DIR}/data}"
@@ -24,8 +16,7 @@ SRC_DIR="${PROJECT_DIR}/src"
 
 # Test suite paths
 NIST_PATH="${PROJECT_DIR}/repos/sts-2.1.2/sts-2.1.2"
-#DIEHARDER_PATH="${PROJECT_DIR}/repos/dieharder-3.31.1/dieharder"
-DIEHARDER_PATH="${PROJECT_DIR}/usr/bin/dieharder"
+DIEHARDER_PATH="${PROJECT_DIR}/repos/dieharder-3.31.1/dieharder"
 
 # Output files
 CONCAT_DATA="${WORKING_DIR}/concatenated_events.txt"
@@ -50,61 +41,36 @@ prepare_data() {
     # Find and sort all event files with the pattern events-*.txt
     local file_count=0
     echo "Looking for files matching pattern: ${DATA_DIR}/events-*.txt"
-    
-    # Create empty concatenated file
-    > "${CONCAT_DATA}"
-    
-    # Find all matching files and concatenate them
-    echo "Searching for event files..."
-    
-    # Count files first without creating huge array
-    file_count=$(ls -1 ${DATA_DIR}/events-*.txt 2>/dev/null | wc -l)
-    
-    if [ ${file_count} -gt 0 ]; then
-        echo "Found ${file_count} event files to process"
-        echo "Concatenating files..."
-        
-        # Use direct cat with glob pattern - much faster
-        cat ${DATA_DIR}/events-*.txt > "${CONCAT_DATA}" 2>/dev/null
-    fi
-    
-    echo "Concatenation complete: ${file_count} files processed"
+    for file in $(find "${DATA_DIR}" -name "events-*.txt" -type f 2>/dev/null | sort); do
+        echo "  Adding: $(basename "$file")"
+        cat "$file" >> "${CONCAT_DATA}"
+        ((file_count++))
+    done
     
     if [ ${file_count} -eq 0 ]; then
-        echo "ERROR: No event files found matching ${DATA_DIR}/events-*.txt"
-        echo "Available files in ${DATA_DIR}:"
-        ls -la "${DATA_DIR}" | head -20
+        echo "ERROR: No event files found in ${DATA_DIR}"
         exit 1
     fi
     
     local line_count=$(wc -l < "${CONCAT_DATA}")
-    echo "Successfully concatenated ${file_count} files with ${line_count} total events"
+    echo "Concatenated ${line_count} events from ${file_count} files"
     
     # Generate binary data using available extractors
     echo "Generating binary random data..."
     
-    # Try extract.py first as it produces more output
-    # Limit input to first 100k lines for reasonable processing time
-    if [ -f "${SRC_DIR}/analysis/extract.py" ]; then
-        echo "Using extract.py (processing first 100k events for speed)..."
-        head -100000 "${CONCAT_DATA}" | timeout 30 python3 "${SRC_DIR}/analysis/extract.py" > "${BINARY_DATA}" 2>"${WORKING_DIR}/extract.log" || true
+    # Try simple_extract.py first as it's more reliable
+    if [ -f "${SRC_DIR}/analysis/simple_extract.py" ]; then
+        echo "Using simple_extract.py..."
+        timeout 60 python3 "${SRC_DIR}/analysis/simple_extract.py" < "${CONCAT_DATA}" > "${BINARY_DATA}" 2>"${WORKING_DIR}/extract.log" || true
     fi
     
     local byte_count=$(wc -c < "${BINARY_DATA}" 2>/dev/null || echo "0")
-    echo "  extract.py produced ${byte_count} bytes"
     
-    # If insufficient data, try simple_extract.py
-    if [ ${byte_count} -lt 1000 ] && [ -f "${SRC_DIR}/analysis/simple_extract.py" ]; then
-        echo "Trying simple_extract.py as fallback (processing first 1M events)..."
-        head -1000000 "${CONCAT_DATA}" | timeout 60 python3 "${SRC_DIR}/analysis/simple_extract.py" > "${BINARY_DATA}.tmp" 2>>"${WORKING_DIR}/extract.log" || true
-        local simple_bytes=$(wc -c < "${BINARY_DATA}.tmp" 2>/dev/null || echo "0")
-        echo "  simple_extract.py produced ${simple_bytes} bytes"
-        if [ ${simple_bytes} -gt ${byte_count} ]; then
-            mv "${BINARY_DATA}.tmp" "${BINARY_DATA}"
-            byte_count=${simple_bytes}
-        else
-            rm -f "${BINARY_DATA}.tmp"
-        fi
+    # If no data, try regular extract.py
+    if [ ${byte_count} -eq 0 ] && [ -f "${SRC_DIR}/analysis/extract.py" ]; then
+        echo "Trying extract.py..."
+        timeout 60 python3 "${SRC_DIR}/analysis/extract.py" < "${CONCAT_DATA}" > "${BINARY_DATA}" 2>>"${WORKING_DIR}/extract.log" || true
+        byte_count=$(wc -c < "${BINARY_DATA}" 2>/dev/null || echo "0")
     fi
     
     # If still no data, generate test data
@@ -133,15 +99,15 @@ run_python_tests() {
     
     # Run analyze.py if available
     if [ -f "${SRC_DIR}/analysis/analyze.py" ]; then
-        echo "  - Running analyze.py (10s timeout)..."
-        timeout 10 python3 "${SRC_DIR}/analysis/analyze.py" < "${CONCAT_DATA}" > "${python_results}/analyze.txt" 2>&1 || echo "    (timed out)"
+        echo "  - Running analyze.py..."
+        timeout 20 python3 "${SRC_DIR}/analysis/analyze.py" < "${CONCAT_DATA}" > "${python_results}/analyze.txt" 2>&1 || echo "    (timed out)"
         python_status="partial"
     fi
     
-    # Run test_randomness.py if available  
+    # Run test_randomness.py if available
     if [ -f "${SRC_DIR}/analysis/test_randomness.py" ]; then
-        echo "  - Running test_randomness.py (10s timeout)..."
-        timeout 10 python3 "${SRC_DIR}/analysis/test_randomness.py" < "${CONCAT_DATA}" > "${python_results}/test_randomness.txt" 2>&1 || echo "    (timed out)"
+        echo "  - Running test_randomness.py..."
+        timeout 20 python3 "${SRC_DIR}/analysis/test_randomness.py" < "${CONCAT_DATA}" > "${python_results}/test_randomness.txt" 2>&1 || echo "    (timed out)"
         [ "$python_status" = "partial" ] && python_status="completed"
     fi
     
@@ -192,8 +158,8 @@ EOF
     echo "0" >> input.txt  # Exit
     
     # Run NIST with timeout
-    echo "  Running tests (30s timeout)..."
-    timeout 30 "${NIST_PATH}/assess" ${MIN_BITS} < input.txt > output.log 2>&1 || echo "    (timed out or failed)"
+    echo "  Running tests (60s timeout)..."
+    timeout 60 "${NIST_PATH}/assess" ${MIN_BITS} < input.txt > output.log 2>&1 || echo "    (timed out or failed)"
     
     # Check for results
     if [ -f "experiments/AlgorithmTesting/finalAnalysisReport.txt" ]; then
@@ -219,11 +185,12 @@ run_dieharder() {
         return
     fi
     
-    # Run quick tests only (-d 0 through -d 5) for faster results
-    echo "  Running quick test battery..."
-    for test_id in 0 1 2 3 4 5; do
-        echo "    Test ${test_id}..."
-        timeout 5 "${DIEHARDER_PATH}/dieharder" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
+    # Run quick tests only (-d 0 through -d 10) instead of all tests
+    echo "  Running quick test battery (60s timeout)..."
+    timeout 60 "${DIEHARDER_PATH}/dieharder" -g 201 -f "${BINARY_DATA}" -d 0 > "${dieharder_results}/results.txt" 2>&1 || true
+    
+    for test_id in {1..10}; do
+        timeout 10 "${DIEHARDER_PATH}/dieharder" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
     done
     
     echo "completed" > "${dieharder_results}/status.txt"
@@ -239,7 +206,7 @@ aggregate_results() {
     "run_id": "${RUN_ID}",
     "timestamp": "$(date -Iseconds)",
     "input": {
-        "event_files": $(find "${DATA_DIR}" -name "events-*.txt" 2>/dev/null | wc -l),
+        "event_files": $(find "${DATA_DIR}" -name "events-*.txt" | wc -l),
         "total_events": $(wc -l < "${CONCAT_DATA}" 2>/dev/null || echo 0),
         "binary_bytes": $(wc -c < "${BINARY_DATA}" 2>/dev/null || echo 0)
     },
@@ -308,7 +275,7 @@ archive_results() {
     local archive_dir="${COMPLETE_DIR}/${RUN_ID}"
     mkdir -p "${archive_dir}"
     
-    # Copy everything to archive (use cp instead of mv to preserve working dir for debugging)
+    # Move everything to archive
     cp -r "${WORKING_DIR}"/* "${archive_dir}/" 2>/dev/null || true
     
     # Compress large files
@@ -328,7 +295,6 @@ main() {
     echo "========================================="
     echo "Run ID: ${RUN_ID}"
     echo "Started: $(date)"
-    echo "Data dir: ${DATA_DIR}"
     echo
     
     prepare_workspace
