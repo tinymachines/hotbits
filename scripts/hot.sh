@@ -48,6 +48,7 @@ OPTIONS:
     --quick                  Fast run: extract-limit=10000, timeouts halved
     --full                   Full run: extract-limit=1000000, timeouts doubled
     --crypto                 Crypto testing: all tests, strict validation
+    --bits                   Maximum extraction: no limits, no timeouts, all tests
     
 ENVIRONMENT VARIABLES:
     All options can also be set via environment variables:
@@ -147,6 +148,17 @@ parse_args() {
                 EXTRACT_LIMIT=500000
                 shift
                 ;;
+            --bits)
+                # Maximum bit extraction mode - no limits, no timeouts
+                TESTS="all"
+                EXTRACT_LIMIT=0  # Process all data
+                MIN_BYTES=125000  # Standard minimum
+                TIMEOUT_EXTRACT=0  # No timeout
+                TIMEOUT_PYTHON=0   # No timeout
+                TIMEOUT_NIST=0     # No timeout
+                TIMEOUT_DIEHARDER=0  # No timeout
+                shift
+                ;;
             *)
                 echo "Unknown option: $1"
                 echo "Use --help for usage information"
@@ -233,11 +245,26 @@ show_config() {
     echo "Output:          ${COMPLETE_DIR}"
     echo "Start Index:     ${START_INDEX}"
     echo "Sample Count:    ${SAMPLE_COUNT} (0=all)"
-    echo "Extract Limit:   ${EXTRACT_LIMIT} lines"
+    if [ ${EXTRACT_LIMIT} -eq 0 ]; then
+        echo "Extract Limit:   no limit (process all)"
+    else
+        echo "Extract Limit:   ${EXTRACT_LIMIT} lines"
+    fi
     echo "Min Bytes:       ${MIN_BYTES}"
     echo "Tests:           Python=$RUN_PYTHON, NIST=$RUN_NIST, Dieharder=$RUN_DIEHARDER"
-    echo "Timeouts:        Extract=${TIMEOUT_EXTRACT}s, Python=${TIMEOUT_PYTHON}s"
-    echo "                 NIST=${TIMEOUT_NIST}s, Dieharder=${TIMEOUT_DIEHARDER}s"
+    
+    # Display timeouts (show "none" if 0)
+    local extract_to="${TIMEOUT_EXTRACT}s"
+    local python_to="${TIMEOUT_PYTHON}s"
+    local nist_to="${TIMEOUT_NIST}s"
+    local dieharder_to="${TIMEOUT_DIEHARDER}s"
+    [ ${TIMEOUT_EXTRACT} -eq 0 ] && extract_to="none"
+    [ ${TIMEOUT_PYTHON} -eq 0 ] && python_to="none"
+    [ ${TIMEOUT_NIST} -eq 0 ] && nist_to="none"
+    [ ${TIMEOUT_DIEHARDER} -eq 0 ] && dieharder_to="none"
+    
+    echo "Timeouts:        Extract=${extract_to}, Python=${python_to}"
+    echo "                 NIST=${nist_to}, Dieharder=${dieharder_to}"
     echo "==============================================================="
     echo
 }
@@ -320,7 +347,12 @@ prepare_data() {
     # Try extract.py first
     if [ -f "${SRC_DIR}/analysis/extract.py" ]; then
         echo "  Using extract.py..."
-        timeout ${TIMEOUT_EXTRACT} python3 "${SRC_DIR}/analysis/extract.py" < "${extract_input}" > "${BINARY_DATA}" 2>"${WORKING_DIR}/extract.log" || true
+        if [ ${TIMEOUT_EXTRACT} -eq 0 ]; then
+            echo "    (No timeout - processing all data)"
+            python3 "${SRC_DIR}/analysis/extract.py" < "${extract_input}" > "${BINARY_DATA}" 2>"${WORKING_DIR}/extract.log" || true
+        else
+            timeout ${TIMEOUT_EXTRACT} python3 "${SRC_DIR}/analysis/extract.py" < "${extract_input}" > "${BINARY_DATA}" 2>"${WORKING_DIR}/extract.log" || true
+        fi
     fi
     
     local byte_count=$(wc -c < "${BINARY_DATA}" 2>/dev/null || echo "0")
@@ -357,13 +389,23 @@ run_python_tests() {
     
     # Run tests with configurable timeouts
     if [ -f "${SRC_DIR}/analysis/analyze.py" ]; then
-        echo "  Running analyze.py (${TIMEOUT_PYTHON}s timeout)..."
-        timeout ${TIMEOUT_PYTHON} python3 "${SRC_DIR}/analysis/analyze.py" < "${test_input}" > "${python_results}/analyze.txt" 2>&1 || echo "    (timed out)"
+        if [ ${TIMEOUT_PYTHON} -eq 0 ]; then
+            echo "  Running analyze.py (no timeout)..."
+            python3 "${SRC_DIR}/analysis/analyze.py" < "${test_input}" > "${python_results}/analyze.txt" 2>&1 || true
+        else
+            echo "  Running analyze.py (${TIMEOUT_PYTHON}s timeout)..."
+            timeout ${TIMEOUT_PYTHON} python3 "${SRC_DIR}/analysis/analyze.py" < "${test_input}" > "${python_results}/analyze.txt" 2>&1 || echo "    (timed out)"
+        fi
     fi
     
     if [ -f "${SRC_DIR}/analysis/test_randomness.py" ]; then
-        echo "  Running test_randomness.py (${TIMEOUT_PYTHON}s timeout)..."
-        timeout ${TIMEOUT_PYTHON} python3 "${SRC_DIR}/analysis/test_randomness.py" < "${test_input}" > "${python_results}/test_randomness.txt" 2>&1 || echo "    (timed out)"
+        if [ ${TIMEOUT_PYTHON} -eq 0 ]; then
+            echo "  Running test_randomness.py (no timeout)..."
+            python3 "${SRC_DIR}/analysis/test_randomness.py" < "${test_input}" > "${python_results}/test_randomness.txt" 2>&1 || true
+        else
+            echo "  Running test_randomness.py (${TIMEOUT_PYTHON}s timeout)..."
+            timeout ${TIMEOUT_PYTHON} python3 "${SRC_DIR}/analysis/test_randomness.py" < "${test_input}" > "${python_results}/test_randomness.txt" 2>&1 || echo "    (timed out)"
+        fi
     fi
 }
 
@@ -414,8 +456,13 @@ EOF
     echo "0" >> input.txt
     
     # Run tests
-    echo "  Running tests (${TIMEOUT_NIST}s timeout)..."
-    timeout ${TIMEOUT_NIST} "${NIST_PATH}/assess" $((MIN_BYTES * 8)) < input.txt > output.log 2>&1 || echo "    (timed out)"
+    if [ ${TIMEOUT_NIST} -eq 0 ]; then
+        echo "  Running tests (no timeout)..."
+        "${NIST_PATH}/assess" $((MIN_BYTES * 8)) < input.txt > output.log 2>&1 || true
+    else
+        echo "  Running tests (${TIMEOUT_NIST}s timeout)..."
+        timeout ${TIMEOUT_NIST} "${NIST_PATH}/assess" $((MIN_BYTES * 8)) < input.txt > output.log 2>&1 || echo "    (timed out)"
+    fi
     
     cd "${WORKING_DIR}"
 }
@@ -440,8 +487,13 @@ run_dieharder() {
     # Run quick battery of tests
     echo "  Running quick test battery..."
     for test_id in 0 1 2 3 4 5; do
-        echo "    Test ${test_id} (${TIMEOUT_DIEHARDER}s timeout)..."
-        timeout ${TIMEOUT_DIEHARDER} "${DIEHARDER_PATH}" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
+        if [ ${TIMEOUT_DIEHARDER} -eq 0 ]; then
+            echo "    Test ${test_id} (no timeout)..."
+            "${DIEHARDER_PATH}" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
+        else
+            echo "    Test ${test_id} (${TIMEOUT_DIEHARDER}s timeout)..."
+            timeout ${TIMEOUT_DIEHARDER} "${DIEHARDER_PATH}" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
+        fi
     done
 }
 
