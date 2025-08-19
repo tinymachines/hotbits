@@ -21,6 +21,7 @@ show_help() {
     cat << EOF
 HOTBITS - Thorium-based TRNG Quality Tracker
 =============================================
+Fixed: NIST STS infinite loop, Dieharder file input, timeout handling
 
 Usage: $0 [OPTIONS]
 
@@ -426,6 +427,17 @@ run_nist_sts() {
         return
     fi
     
+    # Try using the new bypass scripts first
+    if [ -f "${PROJECT_DIR}/scripts/nist_quick_test.sh" ]; then
+        echo "  Using nist_quick_test.sh..."
+        if [ ${TIMEOUT_NIST} -eq 0 ]; then
+            "${PROJECT_DIR}/scripts/nist_quick_test.sh" "${BINARY_DATA}" > "${nist_results}/quick_output.log" 2>&1 || true
+        else
+            timeout ${TIMEOUT_NIST} "${PROJECT_DIR}/scripts/nist_quick_test.sh" "${BINARY_DATA}" > "${nist_results}/quick_output.log" 2>&1 || true
+        fi
+        return
+    fi
+    
     cd "${nist_results}"
     
     # Convert to ASCII bits
@@ -438,22 +450,31 @@ bits = ''.join(format(byte, '08b') for byte in data[:min_bytes])
 print(bits[:min_bytes * 8])
 " > "${nist_results}/data.txt" 2>/dev/null
     
-    # Create NIST input
+    # Create NIST input to avoid interactive loops
     cat > input.txt << EOF
-1
-1
+0
 ${nist_results}/data.txt
 1
 0
 $((MIN_BYTES * 8))
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+1
 EOF
-    
-    for i in {1..15}; do
-        echo "1" >> input.txt
-    done
-    echo "0" >> input.txt
-    echo "0" >> input.txt
     
     # Run tests
     if [ ${TIMEOUT_NIST} -eq 0 ]; then
@@ -484,17 +505,18 @@ run_dieharder() {
         return
     fi
     
-    # Run quick battery of tests
+    # Run quick battery of tests using file input
     echo "  Running quick test battery..."
-    for test_id in 0 1 2 3 4 5; do
-        if [ ${TIMEOUT_DIEHARDER} -eq 0 ]; then
-            echo "    Test ${test_id} (no timeout)..."
-            "${DIEHARDER_PATH}" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
-        else
-            echo "    Test ${test_id} (${TIMEOUT_DIEHARDER}s timeout)..."
-            timeout ${TIMEOUT_DIEHARDER} "${DIEHARDER_PATH}" -g 201 -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
-        fi
-    done
+    if [ ${TIMEOUT_DIEHARDER} -eq 0 ]; then
+        echo "    Running all tests (no timeout)..."
+        "${DIEHARDER_PATH}" -a -f "${BINARY_DATA}" > "${dieharder_results}/results.txt" 2>&1 || true
+    else
+        echo "    Running limited tests (${TIMEOUT_DIEHARDER}s timeout each)..."
+        for test_id in 0 1 2 3 4 5; do
+            echo "      Test ${test_id}..."
+            timeout ${TIMEOUT_DIEHARDER} "${DIEHARDER_PATH}" -f "${BINARY_DATA}" -d ${test_id} >> "${dieharder_results}/results.txt" 2>&1 || true
+        done
+    fi
 }
 
 # Generate results JSON
