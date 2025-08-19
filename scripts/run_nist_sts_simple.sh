@@ -84,7 +84,9 @@ echo "Running all 15 NIST tests..."
     echo "1"           # Random excursions variant test
     echo "1"           # Serial test
     echo "1"           # Linear complexity test
-) | ./assess $FILE_BITS 2>&1 | tee "$PROJECT_ROOT/$OUTPUT_DIR/output.log"
+    echo "0"           # Continue with default parameters
+    echo "1"           # Number of bitstreams to process
+) | timeout 30 ./assess $FILE_BITS 2>&1 | tee "$PROJECT_ROOT/$OUTPUT_DIR/output.log"
 
 # Go back to project root
 cd "$PROJECT_ROOT"
