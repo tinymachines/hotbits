@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function setup() {
+	rm -R ./working/*
+}
+
 function generate() {
 	while read -ra ROW; do
 		echo "$(basename ${ROW})	${ROW}"
@@ -14,16 +18,21 @@ function concatenate() {
 }
 
 function extract() {
-	cat ./working/concatenated.txt \
-		| python ./src/analysis/extract.py \
-			>./working/extracted.bin
+	#cat ./working/concatenated.txt \
+	#	| python ./src/analysis/extract.py \
+	#		>./working/extracted.bin
+
+	./process_timeseries.sh \
+		working/concatenated.txt \
+		working/cleaned_random.bin \
+			&>./working/extract.txt
 }
 
 function prepare() {
 	TARGET=$(( 1+(1000000/8) )) # 1MM bits = 1MM*8 bytes
 	(( $(( 1000000%8 ))==0 )) || TARGET=$(( TARGET+1 ))
 
-	SIZE=$(( $(stat -t --format=%s working/extracted.bin)*8 ))
+	SIZE=$(( $(stat -t --format=%s working/cleaned_random.bin)*8 ))
 	DIFF=$(( 1000000-SIZE ))
 	CHUNKS=$(( DIFF/SIZE ))
 	(( $(( DIFF%SIZE ))==0 )) || CHUNKS=$(( CHUNKS+1 ))
@@ -33,13 +42,13 @@ function prepare() {
 	echo "Difference	= ${DIFF}"
 	echo "Chunks needed	= ${CHUNKS}"
 
-	cp ./working/extracted.bin ./working/random.bin
+	cp ./working/cleane_random.bin ./working/random.bin
 
 	if (( CHUNKS>0 )); then
 		#rm ./working/random.bin &>/dev/null
 		for IDX in $(seq 1 ${CHUNKS}); do
 			echo "${IDX}"
-			cat ./working/extracted.bin >>./working/random.bin
+			cat ./working/cleaned_random.bin >>./working/random.bin
 		done
 	fi
 	dd skip=0 count=${TARGET} if=./working/random.bin of=./working/random-truncated.bin bs=1 &>/dev/null
@@ -53,8 +62,7 @@ function evaluate() {
 	dieharder -a -f ./working/random-truncated.bin | tee ./working/dieharder.txt
 }
 
-rm -R ./working/*
-
+setup
 concatenate
 extract
 prepare
