@@ -29,20 +29,32 @@ function extract() {
 }
 
 function prepare() {
-	TARGET=$(( 1+(1000000/8) )) # 1MM bits = 1MM*8 bytes
-	(( $(( 1000000%8 ))==0 )) || TARGET=$(( TARGET+1 ))
+	
+	# Sample size (Bits)
+	SAMPLE_BITS=1000000
 
+	# Sample size (Bytes)
+	TARGET=$(( 0+(${SAMPLE_BITS}/8) ))
+
+	# Adjust
+	(( $(( ${SAMPLE_BITS}%8 ))==0 )) || TARGET=$(( TARGET+1 ))
+	
+	# Current binary size (Bits)
 	SIZE=$(( $(stat -t --format=%s working/cleaned_random.bin)*8 ))
-	DIFF=$(( 1000000-SIZE ))
+
+	# Needed bits vs actual (Bits)
+	DIFF=$(( ${SAMPLE_BITS}-SIZE ))
+
+	# Extra data needed
 	CHUNKS=$(( DIFF/SIZE ))
 	(( $(( DIFF%SIZE ))==0 )) || CHUNKS=$(( CHUNKS+1 ))
 
 	echo "Target (bits)	= ${TARGET}"
-	echo "File Size	= ${SIZE}"
-	echo "Difference	= ${DIFF}"
+	echo "File Size (bits)	= ${SIZE}"
+	echo "Difference (bits)	= ${DIFF}"
 	echo "Chunks needed	= ${CHUNKS}"
 
-	cp ./working/cleane_random.bin ./working/random.bin
+	cp ./working/cleaned_random.bin ./working/random.bin
 
 	if (( CHUNKS>0 )); then
 		#rm ./working/random.bin &>/dev/null
@@ -62,8 +74,13 @@ function evaluate() {
 	dieharder -a -f ./working/random-truncated.bin | tee ./working/dieharder.txt
 }
 
+function backup() {
+	mv working complete/$(date +%s)
+}
+
 setup
 concatenate
 extract
 prepare
 evaluate
+backup
