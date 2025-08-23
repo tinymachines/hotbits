@@ -1,7 +1,10 @@
 #!/bin/bash
 
+cd /home/tinmac/hotbits
+
 function setup() {
-	rm -R ./working/*
+	rm -R ./working/* &>/dev/null
+	mkdir -p ./working &>/dev/null
 }
 
 function generate() {
@@ -18,10 +21,6 @@ function concatenate() {
 }
 
 function extract() {
-	#cat ./working/concatenated.txt \
-	#	| python ./src/analysis/extract.py \
-	#		>./working/extracted.bin
-
 	./process_timeseries.sh \
 		working/concatenated.txt \
 		working/cleaned_random.bin \
@@ -84,3 +83,5 @@ extract
 prepare
 evaluate
 backup
+
+cd -
