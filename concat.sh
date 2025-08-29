@@ -75,6 +75,7 @@ function evaluate() {
 
 function backup() {
 	mv working complete/$(date +%s)
+	find complete/ -type f | grep -E "final|dieharder" | while read -r ROW; do IFS="/" read -ra SRC<<<${ROW}; cp "${ROW}" "reports/${SRC[1]}-${SRC[-1]}"; done
 }
 
 setup
