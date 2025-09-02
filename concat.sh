@@ -1,30 +1,31 @@
 #!/bin/bash
 
 cd /home/tinmac/hotbits
+DATA="/mnt/hotbits"
 
 function setup() {
-	rm -R ./working/* &>/dev/null
-	mkdir -p ./working &>/dev/null
+	rm -R ${DATA}/working/* &>/dev/null
+	mkdir -p ${DATA}/working &>/dev/null
 }
 
 function generate() {
 	while read -ra ROW; do
 		echo "$(basename ${ROW})	${ROW}"
-	done<<<$(find ./data -type f | grep -E "events[-][0-9]*.txt" | sort) | sort
+	done<<<$(find ${DATA}/data -type f | grep -E "events[-][0-9]*.txt" | sort) | sort
 }
 
 function concatenate() {
 	rm ./working/concatenated.txt
 	generate | while read -r BASE FILE; do
-		cat ${FILE} >> ./working/concatenated.txt
+		cat ${FILE} >> ${DATA}/working/concatenated.txt
 	done
 }
 
 function extract() {
 	./process_timeseries.sh \
-		working/concatenated.txt \
-		working/cleaned_random.bin \
-			&>./working/extract.txt
+		${DATA}/working/concatenated.txt \
+		${DATA}/working/cleaned_random.bin \
+			&>${DATA}/working/extract.txt
 }
 
 function prepare() {
@@ -39,7 +40,7 @@ function prepare() {
 	(( $(( ${SAMPLE_BITS}%8 ))==0 )) || TARGET=$(( TARGET+1 ))
 	
 	# Current binary size (Bits)
-	SIZE=$(( $(stat -t --format=%s working/cleaned_random.bin)*8 ))
+	SIZE=$(( $(stat -t --format=%s ${DATA}/working/cleaned_random.bin)*8 ))
 
 	# Needed bits vs actual (Bits)
 	DIFF=$(( ${SAMPLE_BITS}-SIZE ))
@@ -53,29 +54,34 @@ function prepare() {
 	echo "Difference (bits)	= ${DIFF}"
 	echo "Chunks needed	= ${CHUNKS}"
 
-	cp ./working/cleaned_random.bin ./working/random.bin
+	cp ${DATA}/working/cleaned_random.bin ${DATA}/working/random.bin
 
 	if (( CHUNKS>0 )); then
 		#rm ./working/random.bin &>/dev/null
 		for IDX in $(seq 1 ${CHUNKS}); do
 			echo "${IDX}"
-			cat ./working/cleaned_random.bin >>./working/random.bin
+			cat ${DATA}/working/cleaned_random.bin >>${DATA}/working/random.bin
 		done
 	fi
-	dd skip=0 count=${TARGET} if=./working/random.bin of=./working/random-truncated.bin bs=1 &>/dev/null
+	dd skip=0 count=${TARGET} if=${DATA}/working/random.bin of=${DATA}/working/random-truncated.bin bs=1 &>/dev/null
 
-	stat ./working/random-truncated.bin
+	stat ${DATA}/working/random-truncated.bin
 }
 
 function evaluate() {
 	scripts/nist-template.sh
-	cp -r repos/sts-2.1.2/sts-2.1.2/experiments/AlgorithmTesting ./working/nist.txt
-	dieharder -a -f ./working/random-truncated.bin | tee ./working/dieharder.txt
+	cp -r repos/sts-2.1.2/sts-2.1.2/experiments/AlgorithmTesting ${DATA}/working/nist.txt
+	dieharder -a -f ${DATA}/working/random-truncated.bin | tee ${DATA}/working/dieharder.txt
 }
 
 function backup() {
-	mv working complete/$(date +%s)
-	find complete/ -type f | grep -E "final|dieharder" | while read -r ROW; do IFS="/" read -ra SRC<<<${ROW}; cp "${ROW}" "reports/${SRC[1]}-${SRC[-1]}"; done
+	mv ${DATA}/working ${DATA}/complete/$(date +%s)
+	find ${DATA}/complete/ -type f \
+		| grep -E "final|dieharder" \
+		| while read -r ROW; do \
+			IFS="/" read -ra SRC<<<${ROW}
+			cp "${ROW}" "${DATA}/reports/${SRC[1]}-${SRC[-1]}"
+		done
 }
 
 setup
