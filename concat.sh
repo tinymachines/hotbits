@@ -15,7 +15,7 @@ function generate() {
 }
 
 function concatenate() {
-	rm ./working/concatenated.txt
+	rm ${DATA}/working/concatenated.txt &>/dev/null
 	generate | while read -r BASE FILE; do
 		cat ${FILE} >> ${DATA}/working/concatenated.txt
 	done
@@ -75,12 +75,14 @@ function evaluate() {
 }
 
 function backup() {
+	cp ${DATA}/working/random-truncated.bin \
+		${DATA}/live/hotbits.bin
 	mv ${DATA}/working ${DATA}/complete/$(date +%s)
 	find ${DATA}/complete/ -type f \
 		| grep -E "final|dieharder" \
 		| while read -r ROW; do \
 			IFS="/" read -ra SRC<<<${ROW}
-			cp "${ROW}" "${DATA}/reports/${SRC[1]}-${SRC[-1]}"
+			cp "${ROW}" "${DATA}/reports/${SRC[4]}-${SRC[-1]}"
 		done
 }
 

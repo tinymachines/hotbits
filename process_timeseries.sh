@@ -15,7 +15,9 @@ SAMPLE_COUNT=$(wc -l < "$INPUT_FILE")
 echo "Total samples: $SAMPLE_COUNT"
 
 # Process with optimal settings
-cat "$INPUT_FILE" | python src/analysis/extract.py \
+cat "$INPUT_FILE" \
+  | tr -d '\000' \
+  | python src/analysis/extract.py \
   --filter highpass:0.001 \
   --filter detrend \
   --method adaptive_threshold \

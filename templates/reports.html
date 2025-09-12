@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Hotbits - Randomness Analysis Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Statistical analysis reports for Hotbits true random number generator.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+        .report-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007acc;
+            border-radius: 5px;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .report-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .image-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+        .nav-links {
+            background-color: #e6f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nav-links a {
+            color: #007acc;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hotbits Randomness Analysis Reports</h1>
+        
+        <div class="nav-links">
+            <a href="/">← Back to Generator</a>
+            <a href="/api/status">Entropy Status</a>
+            <a href="/docs">API Documentation</a>
+        </div>
+
+        <div class="description">
+            <p>These reports show statistical analysis of the Hotbits random number generator's performance over time. The analysis validates the quality and randomness of the generated entropy using standard statistical tests.</p>
+        </div>
+
+        <div class="report-section">
+            <h2>Statistical Test Failure Rates Over Time</h2>
+            <div class="description">
+                <p>This chart shows the failure rates of various statistical randomness tests over time. Lower failure rates indicate better randomness quality. The tests include measures for entropy, distribution uniformity, and independence of generated numbers.</p>
+            </div>
+            <div class="image-container">
+                <img src="/static/failure_rates_over_time.png" alt="Failure Rates Over Time" class="report-image">
+                <div class="image-caption">Statistical test failure rates tracked over multiple analysis periods</div>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h2>P-Values Distribution Over Time</h2>
+            <div class="description">
+                <p>This chart displays the distribution of p-values from statistical tests over time. Healthy random number generators should show uniform p-value distributions. Clustering or patterns in p-values can indicate bias or predictability in the random output.</p>
+            </div>
+            <div class="image-container">
+                <img src="/static/pvalues_over_time.png" alt="P-Values Over Time" class="report-image">
+                <div class="image-caption">P-value distributions from randomness tests across different time periods</div>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h2>Analysis Information</h2>
+            <div class="description">
+                <p><strong>Test Suite:</strong> These reports are generated using industry-standard statistical test suites including NIST STS (Statistical Test Suite) and Dieharder tests.</p>
+                
+                <p><strong>Update Frequency:</strong> Reports are updated automatically as new entropy data is processed and tested.</p>
+                
+                <p><strong>Quality Assurance:</strong> The Hotbits system continuously monitors entropy quality to ensure cryptographic-grade randomness. Any significant deviation from expected statistical properties triggers alerts and investigation.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Hotbits True Random Number Service<br>
+               Statistical analysis powered by NIST STS and Dieharder test suites</p>
+        </div>
+    </div>
+</body>
+</html>
