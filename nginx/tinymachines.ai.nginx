@@ -1,0 +1,130 @@
+server {
+        server_name hotbits.tinymachines.ai; # managed by Certbot
+        # FastAPI routes (hotbits random number generation)
+        location /api/integers {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/api/integers;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        location /api/status {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/api/status;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        # FastAPI reports HTML page
+        location /reports {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/reports;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        # FastAPI integers page
+        location /integers/ {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/integers/;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        # Next.js API routes
+        location /api/generate {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:3000/api/generate;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        location /api/reports {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:3000/api/reports;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        location ~ ^/api/reports/.+ {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:3000$request_uri;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        # API docs and openapi.json
+        location /docs {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/docs;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        location /openapi.json {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:8000/openapi.json;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+        }
+        
+        # WebApp (default)
+        location / {
+                        resolver 127.0.0.1      valid=30s;
+                        proxy_pass              http://127.0.0.1:3000/;
+                        proxy_redirect off;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_read_timeout      9000;
+                        # WebSocket support
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection "upgrade";
+                }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/hotbits.tinymachines.ai/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/hotbits.tinymachines.ai/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}

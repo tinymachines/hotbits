@@ -30,9 +30,9 @@ fi
 
 # Start the service
 echo "Starting Hotbits Random Number Service..."
-echo "Web interface will be available at: http://localhost:8000"
-echo "API documentation available at: http://localhost:8000/docs"
+echo "Web interface will be available at: https://hotbits.tinymachines.ai"
+echo "API documentation available at: https://hotbits.tinymachines.ai/docs"
 echo "Press Ctrl+C to stop the service"
 echo ""
-
+rm ~/.pids
 uvicorn random_api:app --host 0.0.0.0 --port 8000 --reload
