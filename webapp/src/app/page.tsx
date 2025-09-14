@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import D3Chart from '@/components/D3Chart';
 import StatusCard from '@/components/StatusCard';
 import RandomForm, { GenerateParams } from '@/components/RandomForm';
 import OfflineMode from '@/components/OfflineMode';
 import { websocketManager, TRNGStatus, MetricsUpdate } from '@/lib/websocket';
 import { createRandomsTable, storeRandoms } from '@/lib/duckdb';
+import { getSerial } from '@/lib/hash';
 
 interface DataPoint {
   timestamp: Date;
@@ -21,6 +22,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedNumbers, setGeneratedNumbers] = useState<string>('');
   const [isOnline, setIsOnline] = useState(true);
+  const statsInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Initialize DuckDB (gracefully handle mobile/proxy issues)
@@ -60,7 +62,7 @@ export default function Home() {
       fetchTRNGStats();
       
       // Update every 5 seconds
-      const statsInterval = setInterval(fetchTRNGStats, 5000);
+      statsInterval.current = setInterval(fetchTRNGStats, 5000);
 
       // WebSocket connection for real-time events (optional)
       websocketManager.connect();
@@ -96,7 +98,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      if (statsInterval) clearInterval(statsInterval);
+      if (statsInterval.current) clearInterval(statsInterval.current);
       websocketManager.disconnect();
     };
   }, [isOffline, isOnline]);
@@ -130,6 +132,42 @@ export default function Home() {
     } catch (error) {
       console.error('Generation failed:', error);
       alert('Failed to generate numbers. Please try again.');
+    }
+    
+    setIsGenerating(false);
+  };
+
+  const handleCheckout = async (params: GenerateParams) => {
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+      
+      if (!response.ok) throw new Error('Generation failed');
+      
+      const data = await response.json();
+      
+      // Store as checked out in DuckDB
+      const numbersBuffer = new TextEncoder().encode(data.numbers);
+      const id = await storeRandoms(numbersBuffer, {
+        format: params.format,
+        count: params.count,
+        minVal: params.min,
+        maxVal: params.max,
+        base: params.base
+      });
+      
+      // Generate hash for this checkout
+      const hash = await getSerial(`${id}_${Date.now()}`, 6);
+      alert(`Numbers checked out successfully! Hash: ${hash}`);
+      
+    } catch (error) {
+      console.error('Checkout failed:', error);
+      alert('Failed to checkout numbers. Please try again.');
     }
     
     setIsGenerating(false);
@@ -208,7 +246,12 @@ export default function Home() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <RandomForm onGenerate={handleGenerate} isLoading={isGenerating} />
+          <RandomForm 
+            onGenerate={handleGenerate} 
+            onCheckout={handleCheckout}
+            isLoading={isGenerating} 
+            isOffline={isOffline}
+          />
           <OfflineMode isOffline={isOffline} onToggleOffline={toggleOfflineMode} />
         </div>
 

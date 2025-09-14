@@ -4,7 +4,9 @@ import { useState } from 'react';
 
 interface RandomFormProps {
   onGenerate: (params: GenerateParams) => void;
+  onCheckout?: (params: GenerateParams) => void;
   isLoading?: boolean;
+  isOffline?: boolean;
 }
 
 export interface GenerateParams {
@@ -16,7 +18,7 @@ export interface GenerateParams {
   columns: number;
 }
 
-export default function RandomForm({ onGenerate, isLoading = false }: RandomFormProps) {
+export default function RandomForm({ onGenerate, onCheckout, isLoading = false, isOffline = false }: RandomFormProps) {
   const [params, setParams] = useState<GenerateParams>({
     count: 100,
     min: 1,
@@ -37,6 +39,21 @@ export default function RandomForm({ onGenerate, isLoading = false }: RandomForm
       return;
     }
     onGenerate(params);
+  };
+
+  const handleCheckout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (params.count > 10000) {
+      alert('Maximum 10,000 numbers allowed');
+      return;
+    }
+    if (params.min > params.max) {
+      alert('Minimum cannot be greater than maximum');
+      return;
+    }
+    if (onCheckout) {
+      onCheckout(params);
+    }
   };
 
   return (
@@ -149,13 +166,26 @@ export default function RandomForm({ onGenerate, isLoading = false }: RandomForm
           </label>
         </div>
         
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Generating...' : 'Generate Numbers'}
-        </button>
+        <div className="flex space-x-3">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Generating...' : 'Generate Numbers'}
+          </button>
+          
+          {isOffline && onCheckout && (
+            <button
+              type="button"
+              onClick={handleCheckout}
+              disabled={isLoading}
+              className="px-6 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Checkout Numbers
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );

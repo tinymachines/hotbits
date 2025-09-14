@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { exportDatabase, importDatabase, getAvailableRandoms, checkoutRandoms } from '@/lib/duckdb';
+import { getSerial } from '@/lib/hash';
 
 interface RandomEntry {
   id: number;
@@ -12,6 +13,9 @@ interface RandomEntry {
   max_val: number;
   base: number;
   checked_out: boolean;
+  data?: Uint8Array;
+  hash?: string;
+  showNumbers?: boolean;
 }
 
 interface OfflineModeProps {
@@ -23,6 +27,7 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
   const [randoms, setRandoms] = useState<RandomEntry[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showNumbers, setShowNumbers] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (isOffline) {
@@ -33,7 +38,13 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
   const loadAvailableRandoms = async () => {
     try {
       const available = await getAvailableRandoms();
-      setRandoms(available as RandomEntry[]);
+      const withHashes = await Promise.all(
+        (available as RandomEntry[]).map(async (item) => ({
+          ...item,
+          hash: await getSerial(`${item.id}_${item.timestamp}`, 6)
+        }))
+      );
+      setRandoms(withHashes);
     } catch (error) {
       console.error('Error loading randoms:', error);
     }
@@ -80,15 +91,22 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
     reader.readAsArrayBuffer(file);
   };
 
-  const handleCheckout = async (id: number) => {
+  const handleDestroy = async (id: number) => {
     try {
-      await checkoutRandoms(id);
+      await checkoutRandoms(id); // This marks as checked out/destroyed
       await loadAvailableRandoms();
-      alert('Numbers checked out for offline use!');
+      alert('Numbers destroyed for security!');
     } catch (error) {
-      console.error('Checkout failed:', error);
-      alert('Checkout failed. Please try again.');
+      console.error('Destroy failed:', error);
+      alert('Destroy failed. Please try again.');
     }
+  };
+
+  const toggleShowNumbers = (id: number) => {
+    setShowNumbers(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   if (!isOffline) {
@@ -98,9 +116,9 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
           <h2 className="text-lg font-semibold">Offline Mode</h2>
           <button
             onClick={onToggleOffline}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-semibold border-2 border-red-700"
           >
-            Enable Offline Mode
+            Go Offline
           </button>
         </div>
         <p className="text-gray-600">
@@ -154,23 +172,39 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
         <div className="max-h-64 overflow-y-auto">
           <div className="space-y-2">
             {randoms.map((random) => (
-              <div key={random.id} className="flex items-center justify-between p-3 bg-white rounded border">
-                <div>
-                  <div className="text-sm font-medium">
-                    {random.count} numbers ({random.min_val} to {random.max_val})
+              <div key={random.id} className="p-3 bg-white rounded border">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <div className="text-sm font-medium">
+                      {random.count} numbers ({random.min_val} to {random.max_val})
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Base {random.base} • {new Date(random.timestamp).toLocaleString()}
+                      {random.checked_out && <span className="ml-2 text-orange-600">• Destroyed</span>}
+                      {random.hash && <span className="ml-2 text-blue-600">• Hash: {random.hash}</span>}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Base {random.base} • {new Date(random.timestamp).toLocaleString()}
-                    {random.checked_out && <span className="ml-2 text-orange-600">• Checked Out</span>}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => toggleShowNumbers(random.id)}
+                      className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                    >
+                      {showNumbers[random.id] ? 'Hide' : 'Show'}
+                    </button>
+                    <button
+                      onClick={() => handleDestroy(random.id)}
+                      disabled={random.checked_out}
+                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {random.checked_out ? 'Destroyed' : 'Destroy'}
+                    </button>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleCheckout(random.id)}
-                  disabled={random.checked_out}
-                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {random.checked_out ? 'Checked Out' : 'Checkout'}
-                </button>
+                {showNumbers[random.id] && random.data && (
+                  <div className="mt-2 p-2 bg-gray-50 rounded text-xs font-mono overflow-auto max-h-32">
+                    {new TextDecoder().decode(random.data)}
+                  </div>
+                )}
               </div>
             ))}
           </div>

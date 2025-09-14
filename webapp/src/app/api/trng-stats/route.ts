@@ -63,7 +63,7 @@ async function calculateGenerationRates() {
       if (dataFiles.length > 0) {
         const latestFile = dataFiles[dataFiles.length - 1];
         const filePath = path.join(DATA_PATH, latestFile);
-        const stats = fs.statSync(filePath);
+        fs.statSync(filePath);
         const content = fs.readFileSync(filePath, 'utf8');
         const lines = content.trim().split('\n').length;
         

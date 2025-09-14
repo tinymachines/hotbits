@@ -1,71 +1,79 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
 
-let db: duckdb.AsyncDuckDB | null = null;
-let connection: duckdb.AsyncDuckDBConnection | null = null;
+const db: duckdb.AsyncDuckDB | null = null;
+const connection: duckdb.AsyncDuckDBConnection | null = null;
 
 export async function initDuckDB() {
   if (db) return { db, connection };
   
-  try {
-    // Check if we're in an environment that supports DuckDB WASM
-    if (typeof Worker === 'undefined' || typeof WebAssembly === 'undefined') {
-      throw new Error('DuckDB WASM not supported in this environment');
-    }
-    
-    // Use the MVP bundle for better compatibility
-    const bundle = await duckdb.selectBundle({
-      mvp: {
-        mainModule: 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.30.0/dist/duckdb-mvp.wasm',
-        mainWorker: 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.30.0/dist/duckdb-browser-mvp.worker.js',
-      }
-    });
-    
-    const worker = new Worker(bundle.mainWorker!);
-    const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING);
-    
-    db = new duckdb.AsyncDuckDB(logger, worker);
-    await db.instantiate(bundle.mainModule);
-    
-    connection = await db.connect();
-    
-    return { db, connection };
-  } catch (error) {
-    console.warn('DuckDB WASM not available, using fallback storage:', error);
+  // Force fallback to localStorage for airgapped reliability
+  console.log('Using localStorage fallback for airgapped operation');
     // Return mock objects that use localStorage as fallback
     return {
       db: null,
       connection: {
-        query: async (sql: string, params?: any[]) => {
-          // Simple localStorage-based fallback for basic functionality
+        query: async (sql: string, params?: unknown[]) => {
+          // Enhanced localStorage-based fallback
           if (sql.includes('CREATE TABLE')) {
             return { toArray: () => [] };
           }
+          
           if (sql.includes('INSERT')) {
             const id = Date.now();
+            const [data, format, count, minVal, maxVal, base] = params || [];
             localStorage.setItem(`hotbits_${id}`, JSON.stringify({ 
               id, 
-              params,
-              timestamp: new Date().toISOString() 
+              data: data ? Array.from(data) : null, // Convert Uint8Array to array for storage
+              format,
+              count,
+              min_val: minVal,
+              max_val: maxVal,
+              base,
+              checked_out: false,
+              timestamp: new Date().toISOString()
             }));
             return { toArray: () => [{ id }] };
           }
+          
+          if (sql.includes('UPDATE') && sql.includes('checked_out')) {
+            // Handle destroy operation
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('hotbits_'));
+            keys.forEach(k => {
+              try {
+                const item = JSON.parse(localStorage.getItem(k) || '{}');
+                if (params && item.id === params[0]) {
+                  item.checked_out = true;
+                  localStorage.setItem(k, JSON.stringify(item));
+                }
+              } catch (error) {
+                console.warn('Error updating item:', error);
+              }
+            });
+            return { toArray: () => [] };
+          }
+          
           if (sql.includes('SELECT')) {
             const keys = Object.keys(localStorage).filter(k => k.startsWith('hotbits_'));
             return { 
               toArray: () => keys.map(k => {
                 try {
-                  return JSON.parse(localStorage.getItem(k) || '{}');
+                  const item = JSON.parse(localStorage.getItem(k) || '{}');
+                  // Convert array back to Uint8Array if data exists
+                  if (item.data && Array.isArray(item.data)) {
+                    item.data = new Uint8Array(item.data);
+                  }
+                  return item;
                 } catch {
                   return {};
                 }
-              })
+              }).filter(item => item.id) // Only return valid items
             };
           }
+          
           return { toArray: () => [] };
         }
       } as duckdb.AsyncDuckDBConnection
     };
-  }
 }
 
 export async function getDuckDB() {
