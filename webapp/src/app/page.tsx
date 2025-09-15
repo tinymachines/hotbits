@@ -22,6 +22,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedNumbers, setGeneratedNumbers] = useState<string>('');
   const [isOnline, setIsOnline] = useState(true);
+  const [refreshRandoms, setRefreshRandoms] = useState(0);
   const statsInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -128,6 +129,9 @@ export default function Home() {
         maxVal: params.max,
         base: params.base
       });
+
+      // Trigger refresh of available randoms
+      setRefreshRandoms(prev => prev + 1);
       
     } catch (error) {
       console.error('Generation failed:', error);
@@ -160,6 +164,9 @@ export default function Home() {
         maxVal: params.max,
         base: params.base
       });
+
+      // Trigger refresh of available randoms
+      setRefreshRandoms(prev => prev + 1);
       
       // Generate hash for this checkout
       const hash = await getSerial(`${id}_${Date.now()}`, 6);
@@ -252,7 +259,7 @@ export default function Home() {
             isLoading={isGenerating} 
             isOffline={isOffline}
           />
-          <OfflineMode isOffline={isOffline} onToggleOffline={toggleOfflineMode} />
+          <OfflineMode isOffline={isOffline} onToggleOffline={toggleOfflineMode} refreshTrigger={refreshRandoms} />
         </div>
 
         {generatedNumbers && (

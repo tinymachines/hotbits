@@ -21,9 +21,10 @@ interface RandomEntry {
 interface OfflineModeProps {
   isOffline: boolean;
   onToggleOffline: () => void;
+  refreshTrigger: number;
 }
 
-export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeProps) {
+export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger }: OfflineModeProps) {
   const [randoms, setRandoms] = useState<RandomEntry[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -33,16 +34,18 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
     if (isOffline) {
       loadAvailableRandoms();
     }
-  }, [isOffline]);
+  }, [isOffline, refreshTrigger]);
 
   const loadAvailableRandoms = async () => {
     try {
       const available = await getAvailableRandoms();
       const withHashes = await Promise.all(
-        (available as RandomEntry[]).map(async (item) => ({
-          ...item,
-          hash: await getSerial(`${item.id}_${item.timestamp}`, 6)
-        }))
+        (available as RandomEntry[])
+          .filter(item => !item.checked_out) // Hide destroyed/checked out numbers
+          .map(async (item) => ({
+            ...item,
+            hash: await getSerial(`${item.id}_${item.timestamp}`, 6)
+          }))
       );
       setRandoms(withHashes);
     } catch (error) {
@@ -180,7 +183,6 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
                     </div>
                     <div className="text-xs text-gray-500">
                       Base {random.base} • {new Date(random.timestamp).toLocaleString()}
-                      {random.checked_out && <span className="ml-2 text-orange-600">• Destroyed</span>}
                       {random.hash && <span className="ml-2 text-blue-600">• Hash: {random.hash}</span>}
                     </div>
                   </div>
@@ -193,10 +195,9 @@ export default function OfflineMode({ isOffline, onToggleOffline }: OfflineModeP
                     </button>
                     <button
                       onClick={() => handleDestroy(random.id)}
-                      disabled={random.checked_out}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                     >
-                      {random.checked_out ? 'Destroyed' : 'Destroy'}
+                      Destroy
                     </button>
                   </div>
                 </div>
