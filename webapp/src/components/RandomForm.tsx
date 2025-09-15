@@ -71,7 +71,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             max="10000"
             value={params.count}
             onChange={(e) => setParams(prev => ({ ...prev, count: parseInt(e.target.value) }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
         
@@ -85,7 +85,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             max="20"
             value={params.columns}
             onChange={(e) => setParams(prev => ({ ...prev, columns: parseInt(e.target.value) }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
         
@@ -97,7 +97,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             type="number"
             value={params.min}
             onChange={(e) => setParams(prev => ({ ...prev, min: parseInt(e.target.value) }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
         
@@ -109,7 +109,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             type="number"
             value={params.max}
             onChange={(e) => setParams(prev => ({ ...prev, max: parseInt(e.target.value) }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
                 onChange={(e) => setParams(prev => ({ ...prev, base: parseInt(e.target.value) }))}
                 className="text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm">{label}</span>
+              <span className="text-sm text-gray-700">{label}</span>
             </label>
           ))}
         </div>
@@ -151,7 +151,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
               onChange={(e) => setParams(prev => ({ ...prev, format: e.target.value as 'plain' | 'html' }))}
               className="text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm">Plain text</span>
+            <span className="text-sm text-gray-700">Plain text</span>
           </label>
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
@@ -162,7 +162,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
               onChange={(e) => setParams(prev => ({ ...prev, format: e.target.value as 'plain' | 'html' }))}
               className="text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm">Formatted</span>
+            <span className="text-sm text-gray-700">Formatted</span>
           </label>
         </div>
         

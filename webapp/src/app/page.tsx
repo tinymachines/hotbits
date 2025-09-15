@@ -202,9 +202,17 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <p className="text-gray-600 mt-2">
-            Cryptographically secure random numbers from physical entropy sources
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-gray-600">
+              Cryptographically secure random numbers from physical entropy sources
+            </p>
+            <a
+              href="/apps"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+            >
+              🎲 Random Apps
+            </a>
+          </div>
         </header>
 
         {!isOffline && status && (
