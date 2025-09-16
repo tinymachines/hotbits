@@ -56,16 +56,16 @@ export default function CoinFlip() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🪙 Coin Flip</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🪙 Coin Flip</h2>
+        <p className="text-quantum-300 mb-6">
           Flip virtual coins using true hardware randomness. Perfect for making fair decisions!
         </p>
 
         {/* Controls */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Coin Type
             </label>
             <select
@@ -82,7 +82,7 @@ export default function CoinFlip() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Coins (1-50)
             </label>
             <input
@@ -114,7 +114,7 @@ export default function CoinFlip() {
 
       {/* Large Results Display */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-8 mb-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Latest Results</h3>
           <div className="flex justify-center items-center space-x-6 mb-6">
             {results.slice(-5).map((result, index) => (
@@ -156,7 +156,7 @@ export default function CoinFlip() {
 
       {/* Results */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Results</h3>
 
           {/* Individual Results */}

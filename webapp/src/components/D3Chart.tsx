@@ -58,10 +58,21 @@ export default function D3Chart({
     // Add axes
     g.append('g')
       .attr('transform', `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%H:%M') as (date: Date) => string));
+      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%H:%M') as (date: Date) => string))
+      .selectAll('text')
+      .style('fill', '#67e8f9'); // quantum-300
 
     g.append('g')
-      .call(d3.axisLeft(yScale));
+      .call(d3.axisLeft(yScale))
+      .selectAll('text')
+      .style('fill', '#67e8f9'); // quantum-300
+
+    // Style axis lines
+    g.selectAll('.domain')
+      .style('stroke', '#22d3ee'); // quantum-400
+
+    g.selectAll('.tick line')
+      .style('stroke', '#22d3ee'); // quantum-400
 
     // Add y-axis label
     g.append('text')
@@ -71,7 +82,7 @@ export default function D3Chart({
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .style('font-size', '12px')
-      .style('fill', '#666')
+      .style('fill', '#67e8f9') // quantum-300
       .text(yLabel);
 
     // Add the line
@@ -95,13 +106,14 @@ export default function D3Chart({
   }, [data, width, height, color, yLabel]);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <h3 className="text-sm font-medium text-gray-900 mb-2">{title}</h3>
+    <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-4">
+      <h3 className="text-sm font-medium text-fusion-400 mb-2">{title}</h3>
       <svg
         ref={svgRef}
         width={width}
         height={height}
         className="overflow-visible"
+        style={{ backgroundColor: 'transparent' }}
       />
     </div>
   );

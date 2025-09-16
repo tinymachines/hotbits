@@ -10,11 +10,11 @@ interface StatusCardProps {
 
 export default function StatusCard({ title, value, trend, subtitle, color = 'blue' }: StatusCardProps) {
   const colorClasses = {
-    green: 'bg-green-50 border-green-200 text-green-800',
-    red: 'bg-red-50 border-red-200 text-red-800', 
-    yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-    blue: 'bg-blue-50 border-blue-200 text-blue-800',
-    gray: 'bg-gray-50 border-gray-200 text-gray-800'
+    green: 'bg-cosmic-800/60 backdrop-blur border-quantum-400/40 text-quantum-300',
+    red: 'bg-cosmic-800/60 backdrop-blur border-fusion-600/40 text-fusion-400',
+    yellow: 'bg-cosmic-800/60 backdrop-blur border-fusion-400/40 text-fusion-300',
+    blue: 'bg-cosmic-800/60 backdrop-blur border-stellar-400/40 text-stellar-300',
+    gray: 'bg-cosmic-800/60 backdrop-blur border-quantum-600/30 text-quantum-400'
   };
 
   const trendIcons = {
@@ -24,9 +24,9 @@ export default function StatusCard({ title, value, trend, subtitle, color = 'blu
   };
 
   const trendColors = {
-    up: 'text-green-600',
-    down: 'text-red-600',
-    stable: 'text-gray-600'
+    up: 'text-quantum-400',
+    down: 'text-fusion-500',
+    stable: 'text-plasma-400'
   };
 
   return (

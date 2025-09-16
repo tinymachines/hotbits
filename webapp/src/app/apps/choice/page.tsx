@@ -114,15 +114,15 @@ export default function RandomChoice() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🎯 Random Choice Picker</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🎯 Random Choice Picker</h2>
+        <p className="text-quantum-300 mb-6">
           Make random selections from custom lists using true hardware randomness. Perfect for decisions!
         </p>
 
         {/* Preset Lists */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Quick Presets
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
@@ -130,7 +130,7 @@ export default function RandomChoice() {
               <button
                 key={index}
                 onClick={() => loadPreset(preset)}
-                className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="px-3 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200 transition-colors"
               >
                 {preset.name}
               </button>
@@ -140,7 +140,7 @@ export default function RandomChoice() {
 
         {/* Custom List Input */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-quantum-300 mb-2">
             Your Choices (one per line, or comma/semicolon separated)
           </label>
           <textarea
@@ -148,9 +148,9 @@ export default function RandomChoice() {
             onChange={(e) => setCustomList(e.target.value)}
             placeholder="Enter your choices here..."
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
           />
-          <div className="mt-2 text-sm text-gray-600">
+          <div className="mt-2 text-sm text-quantum-300">
             {choices.length} choice{choices.length !== 1 ? 's' : ''} available
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function RandomChoice() {
         {/* Settings */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Choices to Pick
             </label>
             <input
@@ -167,7 +167,7 @@ export default function RandomChoice() {
               max="50"
               value={numChoices}
               onChange={(e) => setNumChoices(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
 
@@ -179,7 +179,7 @@ export default function RandomChoice() {
                 onChange={(e) => setAllowDuplicates(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Allow duplicate selections</span>
+              <span className="text-sm text-quantum-300">Allow duplicate selections</span>
             </label>
           </div>
         </div>
@@ -202,8 +202,8 @@ export default function RandomChoice() {
 
       {/* Large Results Display */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Random Selection</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-8 mb-6">
+          <h3 className="text-xl font-semibold text-fusion-400 mb-6 text-center">Random Selection</h3>
 
           <div className="flex justify-center items-center space-x-6 mb-6 flex-wrap gap-4">
             {results.slice(-5).map((result, index) => (
@@ -215,7 +215,7 @@ export default function RandomChoice() {
                 <div className="text-xl font-bold text-gray-800 mb-2 text-center break-words">
                   {result.choice}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-quantum-300">
                   Choice #{index + 1}
                 </div>
               </div>
@@ -223,10 +223,10 @@ export default function RandomChoice() {
           </div>
 
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="text-2xl font-bold text-fusion-400 mb-2">
               {results.length > 1 ? 'Your Random Choices' : 'Your Random Choice'}
             </div>
-            <div className="text-lg text-gray-600">
+            <div className="text-lg text-quantum-300">
               Selected from {choices.length} options
             </div>
           </div>
@@ -235,8 +235,8 @@ export default function RandomChoice() {
 
       {/* Detailed Results */}
       {results.length > 5 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">All Selections</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">All Selections</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
             {results.map((result, index) => (
@@ -259,7 +259,7 @@ export default function RandomChoice() {
 
           <button
             onClick={() => setResults([])}
-            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200"
           >
             Clear Results
           </button>
@@ -268,8 +268,8 @@ export default function RandomChoice() {
 
       {/* Available Choices Preview */}
       {choices.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Choices ({choices.length})</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">Available Choices ({choices.length})</h3>
           <div className="flex flex-wrap gap-2">
             {choices.slice(0, 20).map((choice, index) => (
               <span

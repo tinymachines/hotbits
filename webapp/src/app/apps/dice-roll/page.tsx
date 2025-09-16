@@ -66,15 +66,15 @@ export default function DiceRoll() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🎲 Dice Roller</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🎲 Dice Roller</h2>
+        <p className="text-quantum-300 mb-6">
           Roll various types of dice with true hardware randomness. Perfect for tabletop games and random decisions!
         </p>
 
         {/* Dice Type Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Select Dice Type
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -85,7 +85,7 @@ export default function DiceRoll() {
                 className={`p-3 border-2 rounded-lg transition-all ${
                   selectedDice.id === dice.id
                     ? `${dice.color} border-current`
-                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                    : 'bg-cosmic-800/60 backdrop-blur border-quantum-600/30 hover:bg-gray-50'
                 }`}
               >
                 <div className="text-2xl mb-1">{dice.emoji}</div>
@@ -93,7 +93,7 @@ export default function DiceRoll() {
               </button>
             ))}
           </div>
-          <p className="text-sm text-gray-700 mt-2">
+          <p className="text-sm text-quantum-300 mt-2">
             Selected: {selectedDice.name} ({selectedDice.sides} sides)
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function DiceRoll() {
         {/* Controls */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Dice (1-20)
             </label>
             <input
@@ -110,7 +110,7 @@ export default function DiceRoll() {
               max="20"
               value={numDice}
               onChange={(e) => setNumDice(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
 
@@ -134,8 +134,8 @@ export default function DiceRoll() {
 
       {/* Large Results Display */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Latest Roll Results</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-8 mb-6">
+          <h3 className="text-xl font-semibold text-fusion-400 mb-6 text-center">Latest Roll Results</h3>
           <div className="flex justify-center items-center space-x-6 mb-6 flex-wrap gap-4">
             {results.slice(-6).map((result, index) => (
               <div
@@ -144,17 +144,17 @@ export default function DiceRoll() {
               >
                 <div className="text-6xl mb-2">{selectedDice.emoji}</div>
                 <div className="text-4xl font-bold text-gray-800 mb-1">{result.value}</div>
-                <div className="text-sm font-medium text-gray-600">{selectedDice.id.toUpperCase()}</div>
+                <div className="text-sm font-medium text-quantum-300">{selectedDice.id.toUpperCase()}</div>
               </div>
             ))}
           </div>
 
           {results.length > 1 && (
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-2">
+              <div className="text-3xl font-bold text-fusion-400 mb-2">
                 Total: {stats.sum} • Average: {stats.avg}
               </div>
-              <div className="text-lg text-gray-600">
+              <div className="text-lg text-quantum-300">
                 Min: {stats.min} • Max: {stats.max} • {results.length} Dice
               </div>
             </div>
@@ -164,8 +164,8 @@ export default function DiceRoll() {
 
       {/* Results */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Results</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">Results</h3>
 
           {/* Individual Results */}
           <div className="grid grid-cols-5 md:grid-cols-10 gap-4 mb-6">
@@ -183,23 +183,23 @@ export default function DiceRoll() {
           {/* Statistics */}
           {results.length > 1 && (
             <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-3">Statistics</h4>
+              <h4 className="font-medium text-fusion-400 mb-3">Statistics</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-600">{stats.sum}</div>
-                  <div className="text-sm text-gray-700">Total</div>
+                  <div className="text-sm text-quantum-300">Total</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-green-600">{stats.avg}</div>
-                  <div className="text-sm text-gray-700">Average</div>
+                  <div className="text-sm text-quantum-300">Average</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-red-600">{stats.min}</div>
-                  <div className="text-sm text-gray-700">Minimum</div>
+                  <div className="text-sm text-quantum-300">Minimum</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-600">{stats.max}</div>
-                  <div className="text-sm text-gray-700">Maximum</div>
+                  <div className="text-sm text-quantum-300">Maximum</div>
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function DiceRoll() {
           {/* Clear Results */}
           <button
             onClick={() => setResults([])}
-            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200"
           >
             Clear Results
           </button>
@@ -217,30 +217,30 @@ export default function DiceRoll() {
 
       {/* Common Dice Combinations */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Quick Presets</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-4">
+          <h3 className="font-semibold text-fusion-400 mb-3">Quick Presets</h3>
           <div className="space-y-2">
             <button
               onClick={() => { setSelectedDice(diceTypes[1]); setNumDice(2); }}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100"
+              className="w-full text-left px-3 py-2 text-sm text-quantum-300 rounded-md hover:bg-gray-100"
             >
               🎲 2d6 - Board games (Monopoly, etc.)
             </button>
             <button
               onClick={() => { setSelectedDice(diceTypes[5]); setNumDice(1); }}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100"
+              className="w-full text-left px-3 py-2 text-sm text-quantum-300 rounded-md hover:bg-gray-100"
             >
               🌟 1d20 - D&D attack rolls
             </button>
             <button
               onClick={() => { setSelectedDice(diceTypes[1]); setNumDice(3); }}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100"
+              className="w-full text-left px-3 py-2 text-sm text-quantum-300 rounded-md hover:bg-gray-100"
             >
               🎲 3d6 - D&D ability scores
             </button>
             <button
               onClick={() => { setSelectedDice(diceTypes[6]); setNumDice(1); }}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100"
+              className="w-full text-left px-3 py-2 text-sm text-quantum-300 rounded-md hover:bg-gray-100"
             >
               💯 1d100 - Percentile rolls
             </button>

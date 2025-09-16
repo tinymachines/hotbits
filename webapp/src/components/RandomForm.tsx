@@ -57,12 +57,12 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold mb-4">Generate Random Numbers</h2>
+    <form onSubmit={handleSubmit} className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6">
+      <h2 className="text-lg font-semibold mb-4 text-fusion-400">Generate Random Numbers</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-quantum-300 mb-1">
             Count (max 10,000)
           </label>
           <input
@@ -76,7 +76,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-quantum-300 mb-1">
             Columns
           </label>
           <input
@@ -90,7 +90,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-quantum-300 mb-1">
             Minimum
           </label>
           <input
@@ -102,7 +102,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-quantum-300 mb-1">
             Maximum
           </label>
           <input
@@ -115,7 +115,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
       </div>
       
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-quantum-300 mb-2">
           Number Base
         </label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -134,7 +134,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
                 onChange={(e) => setParams(prev => ({ ...prev, base: parseInt(e.target.value) }))}
                 className="text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{label}</span>
+              <span className="text-sm text-quantum-300">{label}</span>
             </label>
           ))}
         </div>

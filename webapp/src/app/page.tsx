@@ -188,27 +188,27 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-cosmic-dust p-4">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-6">
+        <header className="mb-6 p-6 bg-cosmic-800/80 backdrop-blur rounded-xl border border-quantum-600/20">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-fusion-400 shadow-fusion">
               Hotbits TRNG Dashboard
             </h1>
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
-              <span className="text-sm font-medium">
+              <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-quantum-400 shadow-quantum' : 'bg-fusion-600'}`}></div>
+              <span className="text-sm font-medium text-quantum-300">
                 {isOffline ? 'Offline Mode' : isOnline ? 'Online' : 'Disconnected'}
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-gray-600">
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-quantum-400">
               Cryptographically secure random numbers from physical entropy sources
             </p>
             <a
               href="/apps"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+              className="px-4 py-2 bg-plasma-flame text-white rounded-lg hover:shadow-atomic font-medium text-sm transition-all duration-300"
             >
               🎲 Random Apps
             </a>
@@ -249,13 +249,13 @@ export default function Home() {
               data={metrics}
               title="Decay Rate"
               yLabel="Events/min"
-              color="#3b82f6"
+              color="#06b6d4"
             />
             <D3Chart
               data={entropyData}
               title="Entropy Level"
               yLabel="Entropy"
-              color="#10b981"
+              color="#22d3ee"
             />
           </div>
         )}
@@ -271,8 +271,8 @@ export default function Home() {
         </div>
 
         {generatedNumbers && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold mb-4">Generated Numbers</h3>
+          <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6">
+            <h3 className="text-lg font-semibold mb-4 text-fusion-400">Generated Numbers</h3>
             <div className="bg-gray-50 rounded-md p-4 overflow-auto max-h-64">
               <pre className="text-sm font-mono whitespace-pre-wrap">
                 {generatedNumbers}
@@ -305,10 +305,10 @@ export default function Home() {
 
         {!isOffline && status?.triggerEvents && status.triggerEvents.length > 0 && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-            <h3 className="text-lg font-semibold mb-4">Recent Events</h3>
+            <h3 className="text-lg font-semibold mb-4 text-fusion-400">Recent Events</h3>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {status.triggerEvents.slice(-10).reverse().map((event, index) => (
-                <div key={index} className="text-sm font-mono text-gray-600 p-2 bg-gray-50 rounded">
+                <div key={index} className="text-sm font-mono text-quantum-300 p-2 bg-cosmic-700/50 rounded border border-quantum-600/20">
                   {event}
                 </div>
               ))}
@@ -316,7 +316,7 @@ export default function Home() {
           </div>
         )}
 
-        <footer className="mt-8 text-center text-gray-500 text-sm">
+        <footer className="mt-8 text-center text-quantum-400 text-sm">
           <p>© 2025 Hotbits TRNG • Physical entropy for cryptographic security</p>
         </footer>
       </div>

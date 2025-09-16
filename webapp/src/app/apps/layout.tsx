@@ -22,21 +22,21 @@ export default function AppsLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-cosmic-dust">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 p-4">
+        <header className="bg-cosmic-800/80 backdrop-blur shadow-quantum border-b border-quantum-600/20 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-blue-600 hover:text-blue-800 font-medium">
+              <Link href="/" className="text-quantum-400 hover:text-quantum-300 font-medium transition-colors">
                 ← Back to Dashboard
               </Link>
-              <div className="h-6 border-l border-gray-300"></div>
-              <h1 className="text-2xl font-bold text-gray-900">Random Apps</h1>
+              <div className="h-6 border-l border-quantum-600/40"></div>
+              <h1 className="text-2xl font-bold text-fusion-400 shadow-fusion">Random Apps</h1>
             </div>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden px-3 py-2 border border-gray-300 rounded-md"
+              className="md:hidden px-3 py-2 border border-quantum-600/40 rounded-md text-quantum-300 hover:bg-cosmic-700/50"
             >
               Apps
             </button>
@@ -47,17 +47,17 @@ export default function AppsLayout({
           {/* Sidebar */}
           <aside className={`${
             sidebarOpen ? 'block' : 'hidden'
-          } md:block w-full md:w-64 bg-white shadow-sm border-r border-gray-200 p-4`}>
+          } md:block w-full md:w-64 bg-cosmic-800/60 backdrop-blur shadow-quantum border-r border-quantum-600/20 p-4`}>
             <nav className="space-y-2">
-              <div className="text-sm font-medium text-gray-500 mb-3">Available Apps</div>
+              <div className="text-sm font-medium text-quantum-400 mb-3">Available Apps</div>
               {apps.map((app) => (
                 <Link
                   key={app.id}
                   href={app.path}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
                     pathname === app.path
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-quantum-600/20 text-fusion-400 border border-quantum-400/40 shadow-quantum'
+                      : 'text-quantum-300 hover:bg-cosmic-700/50 hover:text-quantum-200'
                   }`}
                 >
                   <span className="text-lg">{app.icon}</span>
@@ -66,19 +66,19 @@ export default function AppsLayout({
               ))}
             </nav>
 
-            <div className="mt-8 p-3 bg-green-50 rounded-lg border border-green-200">
-              <div className="flex items-center space-x-2 text-green-700">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="mt-8 p-3 bg-fusion-600/10 rounded-lg border border-fusion-400/30">
+              <div className="flex items-center space-x-2 text-fusion-400">
+                <div className="w-2 h-2 bg-fusion-500 rounded-full shadow-fusion"></div>
                 <span className="text-sm font-medium">True Hardware Randomness</span>
               </div>
-              <p className="text-xs text-green-600 mt-1">
+              <p className="text-xs text-quantum-300 mt-1">
                 Powered by physical entropy sources for cryptographic security
               </p>
             </div>
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 bg-cosmic-900/20">
             {children}
           </main>
         </div>

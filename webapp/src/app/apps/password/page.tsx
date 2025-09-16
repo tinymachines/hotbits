@@ -132,15 +132,15 @@ export default function PasswordGenerator() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🔐 Password Generator</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🔐 Password Generator</h2>
+        <p className="text-quantum-300 mb-6">
           Generate cryptographically secure passwords using true hardware randomness. Perfect for accounts and security!
         </p>
 
         {/* Presets */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Quick Presets
           </label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -148,7 +148,7 @@ export default function PasswordGenerator() {
               <button
                 key={index}
                 onClick={() => loadPreset(preset)}
-                className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="px-3 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200 transition-colors"
               >
                 {preset.name}
               </button>
@@ -159,7 +159,7 @@ export default function PasswordGenerator() {
         {/* Settings */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Password Length (4-128)
             </label>
             <input
@@ -168,12 +168,12 @@ export default function PasswordGenerator() {
               max="128"
               value={length}
               onChange={(e) => setLength(Math.max(4, Math.min(128, parseInt(e.target.value) || 4)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Passwords (1-20)
             </label>
             <input
@@ -182,14 +182,14 @@ export default function PasswordGenerator() {
               max="20"
               value={numPasswords}
               onChange={(e) => setNumPasswords(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
         </div>
 
         {/* Character Types */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Character Types
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -200,7 +200,7 @@ export default function PasswordGenerator() {
                 onChange={(e) => setLowercase(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Lowercase (a-z)</span>
+              <span className="text-sm text-quantum-300">Lowercase (a-z)</span>
             </label>
 
             <label className="flex items-center space-x-2 cursor-pointer">
@@ -210,7 +210,7 @@ export default function PasswordGenerator() {
                 onChange={(e) => setUppercase(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Uppercase (A-Z)</span>
+              <span className="text-sm text-quantum-300">Uppercase (A-Z)</span>
             </label>
 
             <label className="flex items-center space-x-2 cursor-pointer">
@@ -220,7 +220,7 @@ export default function PasswordGenerator() {
                 onChange={(e) => setNumbers(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Numbers (0-9)</span>
+              <span className="text-sm text-quantum-300">Numbers (0-9)</span>
             </label>
 
             <label className="flex items-center space-x-2 cursor-pointer">
@@ -230,7 +230,7 @@ export default function PasswordGenerator() {
                 onChange={(e) => setSymbols(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Symbols (!@#$%)</span>
+              <span className="text-sm text-quantum-300">Symbols (!@#$%)</span>
             </label>
 
             <label className="flex items-center space-x-2 cursor-pointer md:col-span-2">
@@ -240,17 +240,17 @@ export default function PasswordGenerator() {
                 onChange={(e) => setExcludeSimilar(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Exclude similar characters (0,O,1,l,I,|)</span>
+              <span className="text-sm text-quantum-300">Exclude similar characters (0,O,1,l,I,|)</span>
             </label>
           </div>
         </div>
 
         {/* Character Set Info */}
         <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-quantum-300">
             <strong>Character set size:</strong> {charSet.length} characters
             {charSet.length > 0 && (
-              <span className="ml-2 text-gray-600">
+              <span className="ml-2 text-quantum-300">
                 (~{Math.round(Math.log2(charSet.length) * length)} bits entropy)
               </span>
             )}
@@ -275,18 +275,18 @@ export default function PasswordGenerator() {
 
       {/* Results */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Generated Passwords</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">Generated Passwords</h3>
 
           <div className="space-y-4">
             {results.map((result, index) => (
               <div
                 key={index}
-                className="p-4 border border-gray-200 rounded-lg bg-gray-50"
+                className="p-4 border border-quantum-600/30 rounded-lg bg-gray-50"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
+                    <span className="text-sm font-medium text-quantum-300">#{index + 1}</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStrengthColor(result.strength)}`}>
                       {result.strength}
                     </span>
@@ -302,7 +302,7 @@ export default function PasswordGenerator() {
                   </button>
                 </div>
 
-                <div className="font-mono text-lg bg-white p-3 rounded border break-all">
+                <div className="font-mono text-lg bg-cosmic-800/60 backdrop-blur p-3 rounded border break-all">
                   {result.password}
                 </div>
 
@@ -315,7 +315,7 @@ export default function PasswordGenerator() {
 
           <button
             onClick={() => setResults([])}
-            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200"
           >
             Clear All Passwords
           </button>

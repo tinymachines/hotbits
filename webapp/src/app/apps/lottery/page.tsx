@@ -189,15 +189,15 @@ export default function LotteryQuickPick() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🎫 Lottery Quick Pick</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🎫 Lottery Quick Pick</h2>
+        <p className="text-quantum-300 mb-6">
           Generate lottery numbers for popular games using true hardware randomness. Good luck!
         </p>
 
         {/* Lottery Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Select Lottery
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -208,14 +208,14 @@ export default function LotteryQuickPick() {
                 className={`p-4 border-2 rounded-lg text-left transition-all ${
                   selectedLottery.id === lottery.id
                     ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                    : 'border-quantum-600/30 bg-cosmic-800/60 backdrop-blur hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-lg">{lottery.flag}</span>
-                  <span className="font-semibold text-gray-900">{lottery.name}</span>
+                  <span className="font-semibold text-fusion-400">{lottery.name}</span>
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-quantum-300">
                   {lottery.mainCount} numbers ({lottery.mainMin}-{lottery.mainMax})
                   {lottery.bonusCount && ` + ${lottery.bonusCount} bonus`}
                 </div>
@@ -230,7 +230,7 @@ export default function LotteryQuickPick() {
         {/* Number of Tickets */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Tickets (1-20)
             </label>
             <input
@@ -239,12 +239,12 @@ export default function LotteryQuickPick() {
               max="20"
               value={numTickets}
               onChange={(e) => setNumTickets(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
 
           <div className="flex items-end">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-quantum-300">
               <div className="font-medium">Odds of winning:</div>
               <div>{calculateOdds(selectedLottery)}</div>
             </div>
@@ -269,14 +269,14 @@ export default function LotteryQuickPick() {
 
       {/* Large Results Display */}
       {results.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Your Lucky Numbers</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-8 mb-6">
+          <h3 className="text-xl font-semibold text-fusion-400 mb-6 text-center">Your Lucky Numbers</h3>
 
           {results.slice(-3).map((result, index) => (
             <div key={index} className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
               <div className="text-center mb-4">
                 <div className="text-lg font-semibold text-gray-800">Ticket #{results.length - index}</div>
-                <div className="text-sm text-gray-600">{selectedLottery.name}</div>
+                <div className="text-sm text-quantum-300">{selectedLottery.name}</div>
               </div>
 
               <div className="flex justify-center items-center space-x-3 mb-4">
@@ -307,10 +307,10 @@ export default function LotteryQuickPick() {
           ))}
 
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="text-2xl font-bold text-fusion-400 mb-2">
               {results.length} Ticket{results.length > 1 ? 's' : ''} Generated
             </div>
-            <div className="text-lg text-gray-600">
+            <div className="text-lg text-quantum-300">
               {selectedLottery.name} • {calculateOdds(selectedLottery)} chance
             </div>
           </div>
@@ -319,14 +319,14 @@ export default function LotteryQuickPick() {
 
       {/* All Results */}
       {results.length > 3 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">All Tickets</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">All Tickets</h3>
 
           <div className="space-y-3">
             {results.map((result, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
+                  <span className="text-sm font-medium text-quantum-300">#{index + 1}</span>
                   <div className="flex space-x-1">
                     {result.mainNumbers.map((num, i) => (
                       <span
@@ -360,7 +360,7 @@ export default function LotteryQuickPick() {
 
           <button
             onClick={() => setResults([])}
-            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            className="mt-4 px-4 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200"
           >
             Clear All Tickets
           </button>

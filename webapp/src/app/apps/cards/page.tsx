@@ -132,16 +132,16 @@ export default function PlayingCards() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🃏 Playing Cards</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+        <h2 className="text-2xl font-bold text-fusion-400 mb-4">🃏 Playing Cards</h2>
+        <p className="text-quantum-300 mb-6">
           Draw cards from a customizable deck with true hardware randomness. Perfect for card games and magic tricks!
         </p>
 
         {/* Deck Configuration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Number of Decks (1-8)
             </label>
             <input
@@ -150,12 +150,12 @@ export default function PlayingCards() {
               max="8"
               value={numDecks}
               onChange={(e) => setNumDecks(Math.max(1, Math.min(8, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-quantum-300 mb-2">
               Cards to Draw (1-100)
             </label>
             <input
@@ -164,14 +164,14 @@ export default function PlayingCards() {
               max="100"
               value={numCards}
               onChange={(e) => setNumCards(Math.max(1, Math.min(100, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-quantum-300"
             />
           </div>
         </div>
 
         {/* Suit Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-quantum-300 mb-3">
             Select Suits
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -182,13 +182,13 @@ export default function PlayingCards() {
                 className={`p-3 border-2 rounded-lg transition-all ${
                   selectedSuits.includes(suit.name)
                     ? `border-${suit.color === 'red' ? 'red' : 'black'}-500 bg-${suit.color === 'red' ? 'red' : 'gray'}-50`
-                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                    : 'border-quantum-600/30 bg-cosmic-800/60 backdrop-blur hover:bg-gray-50'
                 }`}
               >
                 <div className={`text-2xl mb-1 ${suit.color === 'red' ? 'text-red-600' : 'text-black'}`}>
                   {suit.unicode}
                 </div>
-                <div className="text-xs font-medium text-gray-700">{suit.name}</div>
+                <div className="text-xs font-medium text-quantum-300">{suit.name}</div>
               </button>
             ))}
           </div>
@@ -203,7 +203,7 @@ export default function PlayingCards() {
               onChange={(e) => setIncludeJokers(e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Include Jokers (2 per deck)</span>
+            <span className="text-sm text-quantum-300">Include Jokers (2 per deck)</span>
           </label>
         </div>
 
@@ -225,13 +225,13 @@ export default function PlayingCards() {
 
       {/* Large Results Display */}
       {drawnCards.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Drawn Cards</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-8 mb-6">
+          <h3 className="text-xl font-semibold text-fusion-400 mb-6 text-center">Drawn Cards</h3>
           <div className="flex justify-center items-center space-x-4 mb-6 flex-wrap gap-4">
             {drawnCards.slice(-8).map((card, index) => (
               <div
                 key={index}
-                className={`flex flex-col items-center p-4 rounded-xl border-2 shadow-lg bg-white ${
+                className={`flex flex-col items-center p-4 rounded-xl border-2 shadow-lg bg-cosmic-800/60 backdrop-blur ${
                   card.color === 'red' ? 'border-red-300' : 'border-gray-400'
                 }`}
                 style={{ minWidth: '80px' }}
@@ -239,7 +239,7 @@ export default function PlayingCards() {
                 <div className={`text-4xl font-bold mb-2 ${card.color === 'red' ? 'text-red-600' : 'text-black'}`}>
                   {getCardDisplay(card)}
                 </div>
-                <div className="text-xs text-center text-gray-600">
+                <div className="text-xs text-center text-quantum-300">
                   {card.suit !== 'Joker' ? `${card.value} of ${card.suit}` : `${card.value} Joker`}
                 </div>
               </div>
@@ -247,10 +247,10 @@ export default function PlayingCards() {
           </div>
 
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="text-2xl font-bold text-fusion-400 mb-2">
               {drawnCards.length} Cards Drawn
             </div>
-            <div className="text-lg text-gray-600">
+            <div className="text-lg text-quantum-300">
               From {numDecks} deck{numDecks > 1 ? 's' : ''} • {selectedSuits.join(', ')} suits
             </div>
           </div>
@@ -259,15 +259,15 @@ export default function PlayingCards() {
 
       {/* Detailed Results */}
       {drawnCards.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">All Drawn Cards</h3>
+        <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-fusion-400 mb-4">All Drawn Cards</h3>
 
           <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-3 mb-6">
             {drawnCards.map((card, index) => (
               <div
                 key={index}
                 className={`flex flex-col items-center p-2 rounded-lg border ${
-                  card.color === 'red' ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'
+                  card.color === 'red' ? 'border-red-200 bg-red-50' : 'border-quantum-600/30 bg-gray-50'
                 }`}
               >
                 <div className={`text-lg font-bold ${card.color === 'red' ? 'text-red-600' : 'text-black'}`}>
@@ -279,7 +279,7 @@ export default function PlayingCards() {
 
           <button
             onClick={() => setDrawnCards([])}
-            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm bg-gray-100 text-quantum-300 rounded-md hover:bg-gray-200"
           >
             Clear Cards
           </button>

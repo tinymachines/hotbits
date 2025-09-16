@@ -57,18 +57,18 @@ export default function AppsHome() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Random Apps</h2>
-        <p className="text-lg text-gray-600 mb-6">
+        <h2 className="text-3xl font-bold text-fusion-400 mb-4 shadow-fusion">Welcome to Random Apps</h2>
+        <p className="text-lg text-quantum-300 mb-6">
           Explore our collection of random number applications powered by true hardware entropy.
           Each app uses cryptographically secure randomness from physical sources.
         </p>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-cosmic-800/60 backdrop-blur border border-quantum-600/30 rounded-lg p-4 shadow-atomic">
           <div className="flex items-start space-x-3">
-            <div className="text-blue-500 text-xl">⚡</div>
+            <div className="text-fusion-500 text-xl">⚡</div>
             <div>
-              <h3 className="font-semibold text-blue-900">Why True Randomness Matters</h3>
-              <p className="text-blue-700 text-sm mt-1">
+              <h3 className="font-semibold text-quantum-400">Why True Randomness Matters</h3>
+              <p className="text-quantum-300 text-sm mt-1">
                 Unlike computer-generated pseudo-random numbers, our apps use physical entropy sources
                 like radioactive decay and thermal noise for unpredictable, cryptographically secure results.
               </p>
@@ -84,13 +84,13 @@ export default function AppsHome() {
             href={app.path}
             className="block group"
           >
-            <div className={`border-2 rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.02] ${app.color}`}>
+            <div className="border-2 border-quantum-600/30 bg-cosmic-800/40 backdrop-blur rounded-lg p-6 transition-all hover:shadow-atomic hover:scale-[1.02] hover:border-fusion-400/50">
               <div className="flex items-center space-x-3 mb-3">
                 <span className="text-2xl">{app.icon}</span>
-                <h3 className="text-lg font-semibold">{app.name}</h3>
+                <h3 className="text-lg font-semibold text-quantum-300">{app.name}</h3>
               </div>
-              <p className="text-sm opacity-80">{app.description}</p>
-              <div className="mt-4 flex items-center text-sm font-medium">
+              <p className="text-sm text-quantum-400 opacity-90">{app.description}</p>
+              <div className="mt-4 flex items-center text-sm font-medium text-fusion-400">
                 <span>Launch App</span>
                 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
               </div>
@@ -99,15 +99,15 @@ export default function AppsHome() {
         ))}
       </div>
 
-      <div className="mt-12 bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Coming Soon</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+      <div className="mt-12 bg-cosmic-800/40 backdrop-blur rounded-lg border border-plasma-600/30 p-6">
+        <h3 className="text-lg font-semibold text-plasma-400 mb-3">Coming Soon</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-quantum-300">
           <div>🎱 Magic 8-Ball</div>
           <div>👥 Team Generator</div>
           <div>🎨 Color Palette</div>
           <div>📊 Statistical Tools</div>
         </div>
-        <p className="text-sm text-gray-500 mt-3">
+        <p className="text-sm text-quantum-400 mt-3">
           More apps are in development. Have an idea? Let us know!
         </p>
       </div>

@@ -114,7 +114,7 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
 
   if (!isOffline) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Offline Mode</h2>
           <button
@@ -124,7 +124,7 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
             Go Offline
           </button>
         </div>
-        <p className="text-gray-600">
+        <p className="text-quantum-600">
           Enable offline mode to access previously generated random numbers when disconnected.
         </p>
       </div>
@@ -170,18 +170,18 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
       <h3 className="text-md font-medium mb-3">Available Random Sets ({randoms.length})</h3>
       
       {randoms.length === 0 ? (
-        <p className="text-gray-500">No random sets available. Generate some numbers while online first.</p>
+        <p className="text-quantum-500">No random sets available. Generate some numbers while online first.</p>
       ) : (
         <div className="max-h-64 overflow-y-auto">
           <div className="space-y-2">
             {randoms.map((random) => (
-              <div key={random.id} className="p-3 bg-white rounded border">
+              <div key={random.id} className="p-3 bg-cosmic-700/50 rounded border border-quantum-600/20">
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="text-sm font-medium">
                       {random.count} numbers ({random.min_val} to {random.max_val})
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-quantum-500">
                       Base {random.base} • {new Date(random.timestamp).toLocaleString()}
                       {random.hash && <span className="ml-2 text-blue-600">• Hash: {random.hash}</span>}
                     </div>
