@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import D3Chart from '@/components/D3Chart';
 import StatusCard from '@/components/StatusCard';
 import RandomForm, { GenerateParams } from '@/components/RandomForm';
@@ -8,6 +9,7 @@ import OfflineMode from '@/components/OfflineMode';
 import { websocketManager, TRNGStatus, MetricsUpdate } from '@/lib/websocket';
 import { createRandomsTable, storeRandoms } from '@/lib/duckdb';
 import { getSerial } from '@/lib/hash';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DataPoint {
   timestamp: Date;
@@ -15,6 +17,7 @@ interface DataPoint {
 }
 
 export default function Home() {
+  const { theme, toggleTheme } = useTheme();
   const [status, setStatus] = useState<TRNGStatus | null>(null);
   const [metrics, setMetrics] = useState<DataPoint[]>([]);
   const [entropyData, setEntropyData] = useState<DataPoint[]>([]);
@@ -72,10 +75,13 @@ export default function Home() {
         // Can still receive WebSocket updates for real-time events
         const wsData = data as TRNGStatus;
         // Only update trigger events from WebSocket, keep file-based stats
-        setStatus(prev => ({
-          ...prev,
-          triggerEvents: wsData.triggerEvents
-        }));
+        setStatus(prev => {
+          if (!prev) return wsData;
+          return {
+            ...prev,
+            triggerEvents: wsData.triggerEvents
+          };
+        });
       });
 
       websocketManager.on('metrics', (data: unknown) => {
@@ -188,27 +194,68 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-cosmic-dust p-4">
+    <div className={`min-h-screen p-4 transition-colors duration-500 ${
+      theme === 'neon' ? 'bg-neon-bg' : 'bg-cosmic-dust'
+    }`}>
       <div className="max-w-7xl mx-auto">
-        <header className="mb-6 p-6 bg-cosmic-800/80 backdrop-blur rounded-xl border border-quantum-600/20">
+        <header className={`mb-6 p-6 backdrop-blur rounded-xl border transition-all duration-500 ${
+          theme === 'neon'
+            ? 'bg-neon-bg/80 border-neon-panel'
+            : 'bg-cosmic-800/80 border-quantum-600/20'
+        }`}>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-fusion-400 shadow-fusion">
-              Hotbits TRNG Dashboard
-            </h1>
-            <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-quantum-400 shadow-quantum' : 'bg-fusion-600'}`}></div>
-              <span className="text-sm font-medium text-quantum-300">
-                {isOffline ? 'Offline Mode' : isOnline ? 'Online' : 'Disconnected'}
-              </span>
+            <div className="flex items-center space-x-4">
+              <Image
+                src={theme === 'neon' ? '/images/hotbits-small.png' : '/logo.svg'}
+                alt="Hotbits Logo"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
+              <h1 className={`text-3xl font-bold transition-colors duration-500 ${
+                theme === 'neon' ? 'text-neon-text' : 'text-fusion-400 shadow-fusion'
+              }`}>
+                Hotbits TRNG Dashboard
+              </h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleTheme}
+                className={`px-3 py-1.5 rounded-lg transition-all duration-300 ${
+                  theme === 'neon'
+                    ? 'bg-neon-action text-white hover:shadow-lg hover:shadow-neon-action/50'
+                    : 'bg-stellar-600 text-white hover:shadow-lg hover:shadow-stellar-600/50'
+                }`}
+              >
+                {theme === 'neon' ? '🌌' : '💡'} {theme === 'neon' ? 'Cosmic' : 'Neon'}
+              </button>
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full transition-colors duration-500 ${
+                  isOnline
+                    ? theme === 'neon' ? 'bg-neon-panel shadow-neon-panel/50' : 'bg-quantum-400 shadow-quantum'
+                    : theme === 'neon' ? 'bg-neon-action' : 'bg-fusion-600'
+                }`}></div>
+                <span className={`text-sm font-medium transition-colors duration-500 ${
+                  theme === 'neon' ? 'text-neon-text' : 'text-quantum-300'
+                }`}>
+                  {isOffline ? 'Offline Mode' : isOnline ? 'Online' : 'Disconnected'}
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <p className="text-quantum-400">
+            <p className={`transition-colors duration-500 ${
+              theme === 'neon' ? 'text-neon-panel' : 'text-quantum-400'
+            }`}>
               Cryptographically secure random numbers from physical entropy sources
             </p>
             <a
               href="/apps"
-              className="px-4 py-2 bg-plasma-flame text-white rounded-lg hover:shadow-atomic font-medium text-sm transition-all duration-300"
+              className={`px-4 py-2 text-white rounded-lg font-medium text-sm transition-all duration-300 ${
+                theme === 'neon'
+                  ? 'bg-neon-action hover:shadow-lg hover:shadow-neon-action/50'
+                  : 'bg-plasma-flame hover:shadow-atomic'
+              }`}
             >
               🎲 Random Apps
             </a>
@@ -271,8 +318,14 @@ export default function Home() {
         </div>
 
         {generatedNumbers && (
-          <div className="bg-cosmic-800/60 backdrop-blur rounded-lg border border-quantum-600/30 p-6">
-            <h3 className="text-lg font-semibold mb-4 text-fusion-400">Generated Numbers</h3>
+          <div className={`backdrop-blur rounded-lg border p-6 transition-all duration-500 ${
+            theme === 'neon'
+              ? 'bg-neon-bg/60 border-neon-panel'
+              : 'bg-cosmic-800/60 border-quantum-600/30'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 transition-colors duration-500 ${
+              theme === 'neon' ? 'text-neon-text' : 'text-fusion-400'
+            }`}>Generated Numbers</h3>
             <div className="bg-gray-50 rounded-md p-4 overflow-auto max-h-64">
               <pre className="text-sm font-mono whitespace-pre-wrap">
                 {generatedNumbers}
@@ -281,7 +334,11 @@ export default function Home() {
             <div className="mt-4 flex space-x-2">
               <button
                 onClick={() => navigator.clipboard.writeText(generatedNumbers)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className={`px-4 py-2 text-white rounded-md transition-all duration-300 ${
+                  theme === 'neon'
+                    ? 'bg-neon-panel hover:bg-neon-panel/80'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
                 Copy to Clipboard
               </button>
@@ -295,7 +352,11 @@ export default function Home() {
                   a.click();
                   URL.revokeObjectURL(url);
                 }}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className={`px-4 py-2 text-white rounded-md transition-all duration-300 ${
+                  theme === 'neon'
+                    ? 'bg-neon-action hover:bg-neon-action/80'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
                 Download
               </button>
@@ -304,11 +365,21 @@ export default function Home() {
         )}
 
         {!isOffline && status?.triggerEvents && status.triggerEvents.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-            <h3 className="text-lg font-semibold mb-4 text-fusion-400">Recent Events</h3>
+          <div className={`rounded-lg border p-6 mt-6 transition-all duration-500 ${
+            theme === 'neon'
+              ? 'bg-neon-bg/60 border-neon-panel'
+              : 'bg-white border-gray-200'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 transition-colors duration-500 ${
+              theme === 'neon' ? 'text-neon-text' : 'text-fusion-400'
+            }`}>Recent Events</h3>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {status.triggerEvents.slice(-10).reverse().map((event, index) => (
-                <div key={index} className="text-sm font-mono text-quantum-300 p-2 bg-cosmic-700/50 rounded border border-quantum-600/20">
+                <div key={index} className={`text-sm font-mono p-2 rounded border transition-all duration-500 ${
+                  theme === 'neon'
+                    ? 'text-neon-panel bg-neon-bg/50 border-neon-panel/30'
+                    : 'text-quantum-300 bg-cosmic-700/50 border-quantum-600/20'
+                }`}>
                   {event}
                 </div>
               ))}
@@ -316,7 +387,9 @@ export default function Home() {
           </div>
         )}
 
-        <footer className="mt-8 text-center text-quantum-400 text-sm">
+        <footer className={`mt-8 text-center text-sm transition-colors duration-500 ${
+          theme === 'neon' ? 'text-neon-panel' : 'text-quantum-400'
+        }`}>
           <p>© 2025 Hotbits TRNG • Physical entropy for cryptographic security</p>
         </footer>
       </div>

@@ -221,7 +221,7 @@ export default function CoinFlip() {
         <h3 className="font-semibold text-blue-900 mb-2">🔬 True Randomness</h3>
         <p className="text-blue-700 text-sm">
           These coin flips use cryptographically secure randomness generated from physical entropy sources,
-          ensuring truly unpredictable results that can't be reproduced or predicted.
+          ensuring truly unpredictable results that can&apos;t be reproduced or predicted.
         </p>
       </div>
     </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 interface StatusCardProps {
   title: string;
   value: string | number;
@@ -9,7 +11,15 @@ interface StatusCardProps {
 }
 
 export default function StatusCard({ title, value, trend, subtitle, color = 'blue' }: StatusCardProps) {
-  const colorClasses = {
+  const { theme } = useTheme();
+
+  const colorClasses = theme === 'neon' ? {
+    green: 'bg-neon-bg/60 backdrop-blur border-neon-panel text-neon-text',
+    red: 'bg-neon-bg/60 backdrop-blur border-neon-action text-neon-text',
+    yellow: 'bg-neon-bg/60 backdrop-blur border-neon-text text-neon-text',
+    blue: 'bg-neon-bg/60 backdrop-blur border-neon-panel text-neon-panel',
+    gray: 'bg-neon-bg/60 backdrop-blur border-neon-panel/50 text-neon-text'
+  } : {
     green: 'bg-cosmic-800/60 backdrop-blur border-quantum-400/40 text-quantum-300',
     red: 'bg-cosmic-800/60 backdrop-blur border-fusion-600/40 text-fusion-400',
     yellow: 'bg-cosmic-800/60 backdrop-blur border-fusion-400/40 text-fusion-300',
@@ -19,20 +29,24 @@ export default function StatusCard({ title, value, trend, subtitle, color = 'blu
 
   const trendIcons = {
     up: '↗',
-    down: '↘', 
+    down: '↘',
     stable: '→'
   };
 
-  const trendColors = {
+  const trendColors = theme === 'neon' ? {
+    up: 'text-neon-panel',
+    down: 'text-neon-action',
+    stable: 'text-neon-text'
+  } : {
     up: 'text-quantum-400',
     down: 'text-fusion-500',
     stable: 'text-plasma-400'
   };
 
   return (
-    <div className={`rounded-lg border p-4 ${colorClasses[color]}`}>
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium opacity-90">{title}</h3>
+    <div className={`rounded-lg border p-4 transition-all duration-500 ${colorClasses[color]}`}>
+      <div className={`flex items-center justify-between`}>
+        <h3 className={`text-sm font-medium opacity-90`}>{title}</h3>
         {trend && (
           <span className={`text-lg ${trendColors[trend]}`}>
             {trendIcons[trend]}

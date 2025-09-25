@@ -58,7 +58,12 @@ export default function D3Chart({
     // Add axes
     g.append('g')
       .attr('transform', `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%H:%M') as (date: Date) => string))
+      .call(d3.axisBottom(xScale).tickFormat((d: Date | d3.NumberValue) => {
+        if (d instanceof Date) {
+          return d3.timeFormat('%H:%M')(d);
+        }
+        return '';
+      }))
       .selectAll('text')
       .style('fill', '#67e8f9'); // quantum-300
 

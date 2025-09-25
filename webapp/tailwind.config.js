@@ -53,6 +53,14 @@ module.exports = {
           cyan: '#0ff0fc',    // Bright glitch cyan
           orange: '#ff6b35',  // Glitch orange
           purple: '#8b5cf6',  // Glitch purple
+        },
+
+        // Secondary theme colors (Neon theme)
+        'neon': {
+          bg: '#0e1126',      // Dark blue background
+          panel: '#5ce0e1',   // Cyan panel borders
+          text: '#f7ab46',    // Orange font color
+          action: '#b11d74',  // Magenta action buttons
         }
       },
 

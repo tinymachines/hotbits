@@ -11,4 +11,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # Start the webapp in development mode
+# Production mode requires a build which can take a long time on this system
 npm run dev

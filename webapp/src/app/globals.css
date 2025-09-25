@@ -19,6 +19,36 @@
   }
 }
 
+/* Cosmic theme (default) */
+[data-theme="cosmic"] {
+  --theme-bg-primary: #0a0e1a;
+  --theme-bg-secondary: #0f1729;
+  --theme-bg-tertiary: #141f38;
+  --theme-text-primary: #67e8f9;
+  --theme-text-secondary: #fbbf24;
+  --theme-text-accent: #a855f7;
+  --theme-border: rgba(34, 211, 238, 0.2);
+  --theme-button-primary: linear-gradient(135deg, #06b6d4, #3b82f6, #9333ea, #f59e0b);
+  --theme-button-secondary: #06b6d4;
+  --theme-glow-primary: rgba(245, 158, 11, 0.5);
+  --theme-glow-secondary: rgba(6, 182, 212, 0.6);
+}
+
+/* Neon theme */
+[data-theme="neon"] {
+  --theme-bg-primary: #0e1126;
+  --theme-bg-secondary: rgba(14, 17, 38, 0.8);
+  --theme-bg-tertiary: rgba(14, 17, 38, 0.6);
+  --theme-text-primary: #f7ab46;
+  --theme-text-secondary: #5ce0e1;
+  --theme-text-accent: #b11d74;
+  --theme-border: #5ce0e1;
+  --theme-button-primary: #b11d74;
+  --theme-button-secondary: #5ce0e1;
+  --theme-glow-primary: rgba(177, 29, 116, 0.5);
+  --theme-glow-secondary: rgba(92, 224, 225, 0.6);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
