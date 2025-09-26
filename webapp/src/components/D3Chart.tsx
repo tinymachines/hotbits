@@ -65,19 +65,19 @@ export default function D3Chart({
         return '';
       }))
       .selectAll('text')
-      .style('fill', '#67e8f9'); // quantum-300
+      .attr('fill', '#67e8f9'); // quantum-300
 
     g.append('g')
       .call(d3.axisLeft(yScale))
       .selectAll('text')
-      .style('fill', '#67e8f9'); // quantum-300
+      .attr('fill', '#67e8f9'); // quantum-300
 
     // Style axis lines
     g.selectAll('.domain')
-      .style('stroke', '#22d3ee'); // quantum-400
+      .attr('stroke', '#22d3ee'); // quantum-400
 
     g.selectAll('.tick line')
-      .style('stroke', '#22d3ee'); // quantum-400
+      .attr('stroke', '#22d3ee'); // quantum-400
 
     // Add y-axis label
     g.append('text')
@@ -85,9 +85,9 @@ export default function D3Chart({
       .attr('y', 0 - margin.left)
       .attr('x', 0 - (innerHeight / 2))
       .attr('dy', '1em')
-      .style('text-anchor', 'middle')
-      .style('font-size', '12px')
-      .style('fill', '#67e8f9') // quantum-300
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '12px')
+      .attr('fill', '#67e8f9') // quantum-300
       .text(yLabel);
 
     // Add the line
@@ -117,8 +117,7 @@ export default function D3Chart({
         ref={svgRef}
         width={width}
         height={height}
-        className="overflow-visible"
-        style={{ backgroundColor: 'transparent' }}
+        className="overflow-visible bg-transparent"
       />
     </div>
   );

@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
+    <html lang="en" data-theme="cosmic" className="bg-cosmic-900">
+      <body className="font-sans antialiased bg-cosmic-900 text-quantum-300">
         <ThemeProvider>
           {children}
         </ThemeProvider>

@@ -231,10 +231,9 @@ export default function PlayingCards() {
             {drawnCards.slice(-8).map((card, index) => (
               <div
                 key={index}
-                className={`flex flex-col items-center p-4 rounded-xl border-2 shadow-lg bg-cosmic-800/60 backdrop-blur ${
+                className={`flex flex-col items-center p-4 rounded-xl border-2 shadow-lg bg-cosmic-800/60 backdrop-blur min-w-[80px] ${
                   card.color === 'red' ? 'border-red-300' : 'border-gray-400'
                 }`}
-                style={{ minWidth: '80px' }}
               >
                 <div className={`text-4xl font-bold mb-2 ${card.color === 'red' ? 'text-red-600' : 'text-black'}`}>
                   {getCardDisplay(card)}
