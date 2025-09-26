@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import Navigation from '@/components/Navigation';
 import D3Chart from '@/components/D3Chart';
 import StatusCard from '@/components/StatusCard';
 import RandomForm, { GenerateParams } from '@/components/RandomForm';
@@ -17,7 +17,7 @@ interface DataPoint {
 }
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [status, setStatus] = useState<TRNGStatus | null>(null);
   const [metrics, setMetrics] = useState<DataPoint[]>([]);
   const [entropyData, setEntropyData] = useState<DataPoint[]>([]);
@@ -198,69 +198,34 @@ export default function Home() {
       theme === 'neon' ? 'bg-neon-bg' : 'bg-cosmic-dust'
     }`}>
       <div className="max-w-7xl mx-auto">
-        <header className={`mb-6 p-6 backdrop-blur rounded-xl border transition-all duration-500 ${
+        <Navigation />
+
+        {/* Status information */}
+        <div className={`mb-4 p-4 backdrop-blur rounded-xl border transition-all duration-500 ${
           theme === 'neon'
             ? 'bg-neon-bg/80 border-neon-panel'
             : 'bg-cosmic-800/80 border-quantum-600/20'
         }`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Image
-                src={theme === 'neon' ? '/images/hotbits-small.png' : '/logo.svg'}
-                alt="Hotbits Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-              <h1 className={`text-3xl font-bold transition-colors duration-500 ${
-                theme === 'neon' ? 'text-neon-text' : 'text-fusion-400 shadow-fusion'
-              }`}>
-                Hotbits TRNG Dashboard
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleTheme}
-                className={`px-3 py-1.5 rounded-lg transition-all duration-300 ${
-                  theme === 'neon'
-                    ? 'bg-neon-action text-white hover:shadow-lg hover:shadow-neon-action/50'
-                    : 'bg-stellar-600 text-white hover:shadow-lg hover:shadow-stellar-600/50'
-                }`}
-              >
-                {theme === 'neon' ? '🌌' : '💡'} {theme === 'neon' ? 'Cosmic' : 'Neon'}
-              </button>
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full transition-colors duration-500 ${
-                  isOnline
-                    ? theme === 'neon' ? 'bg-neon-panel shadow-neon-panel/50' : 'bg-quantum-400 shadow-quantum'
-                    : theme === 'neon' ? 'bg-neon-action' : 'bg-fusion-600'
-                }`}></div>
-                <span className={`text-sm font-medium transition-colors duration-500 ${
-                  theme === 'neon' ? 'text-neon-text' : 'text-quantum-300'
-                }`}>
-                  {isOffline ? 'Offline Mode' : isOnline ? 'Online' : 'Disconnected'}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-4">
             <p className={`transition-colors duration-500 ${
               theme === 'neon' ? 'text-neon-panel' : 'text-quantum-400'
             }`}>
               Cryptographically secure random numbers from physical entropy sources
             </p>
-            <a
-              href="/apps"
-              className={`px-4 py-2 text-white rounded-lg font-medium text-sm transition-all duration-300 ${
-                theme === 'neon'
-                  ? 'bg-neon-action hover:shadow-lg hover:shadow-neon-action/50'
-                  : 'bg-plasma-flame hover:shadow-atomic'
-              }`}
-            >
-              🎲 Random Apps
-            </a>
+            <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full transition-colors duration-500 ${
+                isOnline
+                  ? theme === 'neon' ? 'bg-neon-panel shadow-neon-panel/50' : 'bg-quantum-400 shadow-quantum'
+                  : theme === 'neon' ? 'bg-neon-action' : 'bg-fusion-600'
+              }`}></div>
+              <span className={`text-sm font-medium transition-colors duration-500 ${
+                theme === 'neon' ? 'text-neon-text' : 'text-quantum-300'
+              }`}>
+                {isOffline ? 'Offline Mode' : isOnline ? 'Online' : 'Disconnected'}
+              </span>
+            </div>
           </div>
-        </header>
+        </div>
 
         {!isOffline && status && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

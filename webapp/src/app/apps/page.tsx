@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import Navigation from '@/components/Navigation';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const apps = [
   {
@@ -54,8 +56,14 @@ const apps = [
 ];
 
 export default function AppsHome() {
+  const { theme } = useTheme();
+
   return (
-    <div>
+    <div className={`min-h-screen p-4 transition-colors duration-500 ${
+      theme === 'neon' ? 'bg-neon-bg' : 'bg-gradient-to-br from-cosmic-900 via-cosmic-800 to-cosmic-900'
+    }`}>
+      <div className="max-w-7xl mx-auto">
+        <Navigation />
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-fusion-400 mb-4 shadow-fusion">Welcome to Random Apps</h2>
         <p className="text-lg text-quantum-300 mb-6">
@@ -110,6 +118,7 @@ export default function AppsHome() {
         <p className="text-sm text-quantum-400 mt-3">
           More apps are in development. Have an idea? Let us know!
         </p>
+        </div>
       </div>
     </div>
   );
