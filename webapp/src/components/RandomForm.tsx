@@ -7,6 +7,8 @@ interface RandomFormProps {
   onCheckout?: (params: GenerateParams) => void;
   isLoading?: boolean;
   isOffline?: boolean;
+  onParamsChange?: (params: GenerateParams) => void;
+  initialParams?: GenerateParams;
 }
 
 export interface GenerateParams {
@@ -18,8 +20,8 @@ export interface GenerateParams {
   columns: number;
 }
 
-export default function RandomForm({ onGenerate, onCheckout, isLoading = false, isOffline = false }: RandomFormProps) {
-  const [params, setParams] = useState<GenerateParams>({
+export default function RandomForm({ onGenerate, onCheckout, isLoading = false, isOffline = false, onParamsChange, initialParams }: RandomFormProps) {
+  const [params, setParams] = useState<GenerateParams>(initialParams || {
     count: 100,
     min: 1,
     max: 100,
@@ -27,6 +29,12 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
     format: 'plain',
     columns: 5
   });
+
+  // Notify parent when params change
+  const updateParams = (newParams: GenerateParams) => {
+    setParams(newParams);
+    onParamsChange?.(newParams);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +78,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             min="1"
             max="10000"
             value={params.count}
-            onChange={(e) => setParams(prev => ({ ...prev, count: parseInt(e.target.value) }))}
+            onChange={(e) => updateParams({ ...params, count: parseInt(e.target.value) })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
@@ -84,7 +92,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
             min="1"
             max="20"
             value={params.columns}
-            onChange={(e) => setParams(prev => ({ ...prev, columns: parseInt(e.target.value) }))}
+            onChange={(e) => updateParams({ ...params, columns: parseInt(e.target.value) })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
@@ -96,7 +104,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
           <input
             type="number"
             value={params.min}
-            onChange={(e) => setParams(prev => ({ ...prev, min: parseInt(e.target.value) }))}
+            onChange={(e) => updateParams({ ...params, min: parseInt(e.target.value) })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
@@ -108,7 +116,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
           <input
             type="number"
             value={params.max}
-            onChange={(e) => setParams(prev => ({ ...prev, max: parseInt(e.target.value) }))}
+            onChange={(e) => updateParams({ ...params, max: parseInt(e.target.value) })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
@@ -131,7 +139,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
                 name="base"
                 value={value}
                 checked={params.base === value}
-                onChange={(e) => setParams(prev => ({ ...prev, base: parseInt(e.target.value) }))}
+                onChange={(e) => updateParams({ ...params, base: parseInt(e.target.value) })}
                 className="text-blue-600 focus:ring-blue-500"
               />
               <span className="text-sm text-quantum-300">{label}</span>
@@ -148,7 +156,7 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
               name="format"
               value="plain"
               checked={params.format === 'plain'}
-              onChange={(e) => setParams(prev => ({ ...prev, format: e.target.value as 'plain' | 'html' }))}
+              onChange={(e) => updateParams({ ...params, format: e.target.value as 'plain' | 'html' })}
               className="text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Plain text</span>
@@ -159,32 +167,26 @@ export default function RandomForm({ onGenerate, onCheckout, isLoading = false, 
               name="format"
               value="html"
               checked={params.format === 'html'}
-              onChange={(e) => setParams(prev => ({ ...prev, format: e.target.value as 'plain' | 'html' }))}
+              onChange={(e) => updateParams({ ...params, format: e.target.value as 'plain' | 'html' })}
               className="text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Formatted</span>
           </label>
         </div>
         
-        <div className="flex space-x-3">
+        <div className="flex justify-end">
           <button
-            type="submit"
+            type={isOffline ? "button" : "submit"}
+            onClick={isOffline ? handleCheckout : undefined}
             disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-6 py-2 text-white rounded-md focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isOffline
+                ? 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
+                : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+            }`}
           >
-            {isLoading ? 'Generating...' : 'Generate Numbers'}
+            {isLoading ? 'Processing...' : isOffline ? 'Checkout Numbers' : 'Generate Numbers'}
           </button>
-          
-          {isOffline && onCheckout && (
-            <button
-              type="button"
-              onClick={handleCheckout}
-              disabled={isLoading}
-              className="px-6 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Checkout Numbers
-            </button>
-          )}
         </div>
       </div>
     </form>

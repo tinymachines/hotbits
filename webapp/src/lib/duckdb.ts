@@ -12,7 +12,9 @@ export async function initDuckDB() {
     return {
       db: null,
       connection: {
-        query: async (sql: string, params?: unknown[]) => {
+        query: async (sql: string, ...params: unknown[]) => {
+          // Destructure params from arguments
+          const actualParams = params.length > 0 ? params[0] as unknown[] : undefined;
           // Enhanced localStorage-based fallback
           if (sql.includes('CREATE TABLE')) {
             return { toArray: () => [] };
@@ -20,9 +22,9 @@ export async function initDuckDB() {
           
           if (sql.includes('INSERT')) {
             const id = Date.now();
-            const [data, format, count, minVal, maxVal, base] = params || [];
-            localStorage.setItem(`hotbits_${id}`, JSON.stringify({ 
-              id, 
+            const [data, format, count, minVal, maxVal, base] = actualParams || [];
+            const storedItem = {
+              id,
               data: data ? Array.from(data as Uint8Array) : null, // Convert Uint8Array to array for storage
               format,
               count,
@@ -31,7 +33,9 @@ export async function initDuckDB() {
               base,
               checked_out: false,
               timestamp: new Date().toISOString()
-            }));
+            };
+            console.log('localStorage INSERT - storing item:', storedItem);
+            localStorage.setItem(`hotbits_${id}`, JSON.stringify(storedItem));
             return { toArray: () => [{ id }] };
           }
           
@@ -41,12 +45,29 @@ export async function initDuckDB() {
             keys.forEach(k => {
               try {
                 const item = JSON.parse(localStorage.getItem(k) || '{}');
-                if (params && item.id === params[0]) {
+                if (actualParams && item.id === actualParams[0]) {
                   item.checked_out = true;
                   localStorage.setItem(k, JSON.stringify(item));
                 }
               } catch (error) {
                 console.warn('Error updating item:', error);
+              }
+            });
+            return { toArray: () => [] };
+          }
+
+          if (sql.includes('DELETE')) {
+            // Handle delete operation
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('hotbits_'));
+            keys.forEach(k => {
+              try {
+                const item = JSON.parse(localStorage.getItem(k) || '{}');
+                if (actualParams && item.id === actualParams[0]) {
+                  localStorage.removeItem(k);
+                  console.log(`Deleted hotbits record with id: ${actualParams[0]}`);
+                }
+              } catch (error) {
+                console.warn('Error deleting item:', error);
               }
             });
             return { toArray: () => [] };
@@ -111,11 +132,12 @@ export async function storeRandoms(data: Uint8Array, options: {
 }) {
   const { connection } = await getDuckDB();
 
-  const result = await connection!.query(`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await (connection as any).query(`
     INSERT INTO randoms (data, format, count, min_val, max_val, base, expires_at)
     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP + INTERVAL '24 hours')
     RETURNING id
-  `);
+  `, [data, options.format, options.count, options.minVal, options.maxVal, options.base]);
   
   return result.toArray()[0].id;
 }
@@ -123,19 +145,30 @@ export async function storeRandoms(data: Uint8Array, options: {
 export async function getRandoms(id: number) {
   const { connection } = await getDuckDB();
 
-  const result = await connection!.query(`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await (connection as any).query(`
     SELECT * FROM randoms WHERE id = ? AND expires_at > CURRENT_TIMESTAMP
-  `);
-  
+  `, [id]);
+
   return result.toArray()[0] || null;
 }
 
 export async function checkoutRandoms(id: number) {
   const { connection } = await getDuckDB();
 
-  await connection!.query(`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (connection as any).query(`
     UPDATE randoms SET checked_out = true WHERE id = ?
-  `);
+  `, [id]);
+}
+
+export async function deleteRandoms(id: number) {
+  const { connection } = await getDuckDB();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (connection as any).query(`
+    DELETE FROM randoms WHERE id = ?
+  `, [id]);
 }
 
 export async function getAvailableRandoms() {

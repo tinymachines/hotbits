@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { exportDatabase, importDatabase, getAvailableRandoms, checkoutRandoms } from '@/lib/duckdb';
+import { getAvailableRandoms, deleteRandoms, getRandoms } from '@/lib/duckdb';
 import { getSerial } from '@/lib/hash';
 
 interface RandomEntry {
@@ -26,8 +26,6 @@ interface OfflineModeProps {
 
 export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger }: OfflineModeProps) {
   const [randoms, setRandoms] = useState<RandomEntry[]>([]);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
   const [showNumbers, setShowNumbers] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
@@ -53,60 +51,49 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
     }
   };
 
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      const buffer = await exportDatabase();
-      // exportDatabase returns Uint8Array - convert to Array for Blob compatibility
-      const blob = new Blob([buffer.buffer as ArrayBuffer], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `hotbits-randoms-${Date.now()}.db`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
-    }
-    setIsExporting(false);
-  };
-
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsImporting(true);
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const buffer = new Uint8Array(e.target?.result as ArrayBuffer);
-        await importDatabase(buffer);
-        await loadAvailableRandoms();
-        alert('Database imported successfully!');
-      } catch (error) {
-        console.error('Import failed:', error);
-        alert('Import failed. Please check the file format.');
-      }
-      setIsImporting(false);
-    };
-    reader.readAsArrayBuffer(file);
-  };
 
   const handleDestroy = async (id: number) => {
+    if (!confirm('Are you sure you want to destroy these numbers? This action cannot be undone.')) {
+      return;
+    }
+
     try {
-      await checkoutRandoms(id); // This marks as checked out/destroyed
-      await loadAvailableRandoms();
-      alert('Numbers destroyed for security!');
+      await deleteRandoms(id); // Actually delete the records from database
+      // Remove from local state immediately
+      setRandoms(prev => prev.filter(r => r.id !== id));
+      // Clear show state for this ID
+      setShowNumbers(prev => {
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
+      // No popup after successful deletion
     } catch (error) {
       console.error('Destroy failed:', error);
       alert('Destroy failed. Please try again.');
+      // Reload on error to ensure consistency
+      await loadAvailableRandoms();
     }
   };
 
-  const toggleShowNumbers = (id: number) => {
+  const toggleShowNumbers = async (id: number) => {
+    if (!showNumbers[id]) {
+      // If not currently showing numbers, fetch them first
+      try {
+        const randomData = await getRandoms(id);
+        if (randomData) {
+          // Update the randoms array with the fetched data
+          setRandoms(prev => prev.map(r =>
+            r.id === id ? { ...r, data: randomData.data } : r
+          ));
+        }
+      } catch (error) {
+        console.error('Error fetching random data:', error);
+        alert('Failed to load numbers. Please try again.');
+        return;
+      }
+    }
+
     setShowNumbers(prev => ({
       ...prev,
       [id]: !prev[id]
@@ -133,77 +120,57 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
   }
 
   return (
-    <div className="bg-gray-50 rounded-lg border border-gray-300 p-6">
+    <div className="bg-cosmic-900/90 backdrop-blur rounded-lg border border-quantum-400/50 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-          <h2 className="text-lg font-semibold">Offline Mode Active</h2>
+          <h2 className="text-lg font-semibold text-quantum-200">Offline Mode Active</h2>
         </div>
         <button
           onClick={onToggleOffline}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold border-2 border-blue-700"
         >
           Go Online
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <button
-          onClick={handleExport}
-          disabled={isExporting}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-        >
-          {isExporting ? 'Exporting...' : 'Export Database'}
-        </button>
-        
-        <label className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer inline-block text-center">
-          {isImporting ? 'Importing...' : 'Import Database'}
-          <input
-            type="file"
-            accept=".db"
-            onChange={handleImport}
-            disabled={isImporting}
-            className="hidden"
-          />
-        </label>
-      </div>
 
-      <h3 className="text-md font-medium mb-3">Available Random Sets ({randoms.length})</h3>
+      <h3 className="text-md font-medium mb-3 text-quantum-200">Available Random Sets ({randoms.length})</h3>
       
       {randoms.length === 0 ? (
-        <p className="text-quantum-500">No random sets available. Generate some numbers while online first.</p>
+        <p className="text-quantum-400">No random sets available. Generate some numbers while online first.</p>
       ) : (
         <div className="max-h-64 overflow-y-auto">
           <div className="space-y-2">
             {randoms.map((random) => (
-              <div key={random.id} className="p-3 bg-cosmic-700/50 rounded border border-quantum-600/20">
+              <div key={random.id} className="p-3 bg-quantum-800/30 rounded border border-quantum-500/40">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <div className="text-sm font-medium">
+                    <div className="text-sm font-medium text-quantum-200">
                       {random.count} numbers ({random.min_val} to {random.max_val})
                     </div>
-                    <div className="text-xs text-quantum-500">
+                    <div className="text-xs text-quantum-400">
                       Base {random.base} • {new Date(random.timestamp).toLocaleString()}
-                      {random.hash && <span className="ml-2 text-blue-600">• Hash: {random.hash}</span>}
+                      {random.hash && <span className="ml-2 text-quantum-300">• Hash: {random.hash}</span>}
                     </div>
                   </div>
                   <div className="flex space-x-2">
                     <button
                       onClick={() => toggleShowNumbers(random.id)}
-                      className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                      className="px-2 py-1 text-xs bg-quantum-700 text-quantum-200 rounded hover:bg-quantum-600 border border-quantum-500"
                     >
                       {showNumbers[random.id] ? 'Hide' : 'Show'}
                     </button>
                     <button
                       onClick={() => handleDestroy(random.id)}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                      className="px-3 py-1 text-sm bg-red-700 text-quantum-200 rounded hover:bg-red-600 border border-red-500"
                     >
                       Destroy
                     </button>
                   </div>
                 </div>
                 {showNumbers[random.id] && random.data && (
-                  <div className="mt-2 p-2 bg-gray-50 rounded text-xs font-mono overflow-auto max-h-32">
+                  <div className="mt-2 p-2 bg-cosmic-800/60 rounded text-xs font-mono overflow-auto max-h-32 text-quantum-300 border border-quantum-600/30">
                     {new TextDecoder().decode(random.data)}
                   </div>
                 )}

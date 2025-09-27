@@ -26,6 +26,14 @@ export default function Home() {
   const [generatedNumbers, setGeneratedNumbers] = useState<string>('');
   const [isOnline, setIsOnline] = useState(true);
   const [refreshRandoms, setRefreshRandoms] = useState(0);
+  const [currentFormParams, setCurrentFormParams] = useState<GenerateParams>({
+    count: 100,
+    min: 1,
+    max: 100,
+    base: 10,
+    format: 'plain',
+    columns: 5
+  });
   const statsInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -111,21 +119,24 @@ export default function Home() {
   }, [isOffline, isOnline]);
 
   const handleGenerate = async (params: GenerateParams) => {
+    // Update current form params
+    setCurrentFormParams(params);
+
     setIsGenerating(true);
     setGeneratedNumbers('');
-    
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
-      
+
       if (!response.ok) throw new Error('Generation failed');
-      
+
       const data = await response.json();
       setGeneratedNumbers(data.numbers);
-      
+
       // Store in DuckDB
       const numbersBuffer = new TextEncoder().encode(data.numbers);
       await storeRandoms(numbersBuffer, {
@@ -138,12 +149,12 @@ export default function Home() {
 
       // Trigger refresh of available randoms
       setRefreshRandoms(prev => prev + 1);
-      
+
     } catch (error) {
       console.error('Generation failed:', error);
       alert('Failed to generate numbers. Please try again.');
     }
-    
+
     setIsGenerating(false);
   };
 
@@ -163,6 +174,8 @@ export default function Home() {
       
       // Store as checked out in DuckDB
       const numbersBuffer = new TextEncoder().encode(data.numbers);
+      console.log('Storing checkout with params:', params, 'data length:', data.numbers.length);
+
       const id = await storeRandoms(numbersBuffer, {
         format: params.format,
         count: params.count,
@@ -171,9 +184,14 @@ export default function Home() {
         base: params.base
       });
 
+      console.log('Stored with ID:', id);
+
+      // Small delay to ensure storage completes
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       // Trigger refresh of available randoms
       setRefreshRandoms(prev => prev + 1);
-      
+
       // Generate hash for this checkout
       const hash = await getSerial(`${id}_${Date.now()}`, 6);
       alert(`Numbers checked out successfully! Hash: ${hash}`);
@@ -273,13 +291,19 @@ export default function Home() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <RandomForm 
-            onGenerate={handleGenerate} 
+          <RandomForm
+            onGenerate={handleGenerate}
             onCheckout={handleCheckout}
-            isLoading={isGenerating} 
+            isLoading={isGenerating}
             isOffline={isOffline}
+            initialParams={currentFormParams}
+            onParamsChange={setCurrentFormParams}
           />
-          <OfflineMode isOffline={isOffline} onToggleOffline={toggleOfflineMode} refreshTrigger={refreshRandoms} />
+          <OfflineMode
+            isOffline={isOffline}
+            onToggleOffline={toggleOfflineMode}
+            refreshTrigger={refreshRandoms}
+          />
         </div>
 
         {generatedNumbers && (
@@ -333,10 +357,10 @@ export default function Home() {
           <div className={`rounded-lg border p-6 mt-6 transition-all duration-500 ${
             theme === 'neon'
               ? 'bg-neon-bg/60 border-neon-panel'
-              : 'bg-white border-gray-200'
+              : 'bg-cosmic-900/90 backdrop-blur border-quantum-400/50'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 transition-colors duration-500 ${
-              theme === 'neon' ? 'text-neon-text' : 'text-fusion-400'
+              theme === 'neon' ? 'text-neon-text' : 'text-quantum-200'
             }`}>Recent Events</h3>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {status.triggerEvents.slice(-10).reverse().map((event, index) => (
