@@ -35,51 +35,51 @@ export default function Navigation() {
         </div>
 
         {/* Navigation Buttons */}
-        <nav className="flex items-center space-x-3">
+        <nav className="flex items-center space-x-2">
           {/* Home Button */}
           <Link
             href="/"
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-2 py-1 rounded text-xs font-normal transition-all duration-200 ${
               pathname === '/'
                 ? theme === 'neon'
-                  ? 'bg-neon-action text-white shadow-lg'
-                  : 'bg-gradient-to-r from-quantum-500 to-stellar-500 text-white shadow-lg'
+                  ? 'bg-neon-panel text-neon-bg border border-neon-panel'
+                  : 'bg-quantum-300 text-cosmic-900 border border-quantum-300'
                 : theme === 'neon'
-                  ? 'bg-neon-panel/20 text-neon-text border border-neon-panel hover:bg-neon-panel/40'
-                  : 'bg-cosmic-700/50 text-quantum-300 border border-quantum-600/30 hover:bg-cosmic-700'
+                  ? 'bg-transparent text-neon-panel border border-neon-panel hover:bg-neon-panel hover:text-neon-bg'
+                  : 'bg-transparent text-quantum-300 border border-quantum-300 hover:bg-quantum-300 hover:text-cosmic-900'
             }`}
           >
-            🏠 Home
+            Home
           </Link>
 
           {/* Random Apps Button */}
           <Link
             href="/apps"
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-2 py-1 rounded text-xs font-normal transition-all duration-200 ${
               pathname.startsWith('/apps')
                 ? theme === 'neon'
-                  ? 'bg-neon-action text-white shadow-lg'
-                  : 'bg-gradient-to-r from-quantum-500 to-stellar-500 text-white shadow-lg'
+                  ? 'bg-neon-panel text-neon-bg border border-neon-panel'
+                  : 'bg-quantum-300 text-cosmic-900 border border-quantum-300'
                 : theme === 'neon'
-                  ? 'bg-neon-panel/20 text-neon-text border border-neon-panel hover:bg-neon-panel/40'
-                  : 'bg-cosmic-700/50 text-quantum-300 border border-quantum-600/30 hover:bg-cosmic-700'
+                  ? 'bg-transparent text-neon-panel border border-neon-panel hover:bg-neon-panel hover:text-neon-bg'
+                  : 'bg-transparent text-quantum-300 border border-quantum-300 hover:bg-quantum-300 hover:text-cosmic-900'
             }`}
           >
-            🎲 Apps
+            Apps
           </Link>
 
 
           {/* Theme Switcher */}
           <button
             onClick={toggleTheme}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-2 py-1 rounded text-xs font-normal transition-all duration-200 ${
               theme === 'neon'
-                ? 'bg-neon-panel/20 text-neon-text border border-neon-panel hover:bg-neon-panel/40'
-                : 'bg-cosmic-700/50 text-quantum-300 border border-quantum-600/30 hover:bg-cosmic-700'
+                ? 'bg-transparent text-neon-panel border border-neon-panel hover:bg-neon-panel hover:text-neon-bg'
+                : 'bg-transparent text-quantum-300 border border-quantum-300 hover:bg-quantum-300 hover:text-cosmic-900'
             }`}
             aria-label="Toggle theme"
           >
-            {theme === 'neon' ? '🌌 Cosmic' : '💫 Neon'}
+            {theme === 'neon' ? 'Cosmic' : 'Neon'}
           </button>
         </nav>
       </div>

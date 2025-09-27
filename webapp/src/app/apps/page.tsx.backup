@@ -64,32 +64,6 @@ export default function AppsHome() {
     }`}>
       <div className="max-w-7xl mx-auto">
         <Navigation />
-
-        {/* Status information */}
-        <div className={`mb-4 p-4 backdrop-blur rounded-xl border transition-all duration-500 ${
-          theme === 'neon'
-            ? 'bg-neon-bg/80 border-neon-panel'
-            : 'bg-cosmic-800/80 border-quantum-600/20'
-        }`}>
-          <div className="flex items-center justify-between">
-            <p className={`transition-colors duration-500 ${
-              theme === 'neon' ? 'text-neon-panel' : 'text-quantum-400'
-            }`}>
-              Random number applications powered by cryptographically secure hardware entropy
-            </p>
-            <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full transition-colors duration-500 ${
-                theme === 'neon' ? 'bg-neon-panel shadow-neon-panel/50' : 'bg-quantum-400 shadow-quantum'
-              }`}></div>
-              <span className={`text-sm font-medium transition-colors duration-500 ${
-                theme === 'neon' ? 'text-neon-text' : 'text-quantum-300'
-              }`}>
-                Apps Ready
-              </span>
-            </div>
-          </div>
-        </div>
-
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-fusion-400 mb-4 shadow-fusion">Welcome to Random Apps</h2>
         <p className="text-lg text-quantum-300 mb-6">
