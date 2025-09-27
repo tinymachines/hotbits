@@ -6,7 +6,7 @@ const { spawn } = require('child_process');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = '0.0.0.0';
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
@@ -38,7 +38,7 @@ app.prepare().then(() => {
     
     try {
       // Fetch real TRNG stats
-      const response = await fetch('http://127.0.0.1:3000/api/trng-stats');
+      const response = await fetch(`http://localhost:${port}/api/trng-stats`);
       if (response.ok) {
         const trngData = await response.json();
         

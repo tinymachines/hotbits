@@ -8,7 +8,7 @@ const DATA_PATH = path.join(process.cwd(), '../data');
 export async function GET() {
   try {
     // Get basic TRNG status from FastAPI
-    const statusResponse = await fetch('http://127.0.0.1:8000/api/status');
+    const statusResponse = await fetch('http://trng2:8000/api/status');
     if (!statusResponse.ok) {
       throw new Error('Failed to fetch TRNG status');
     }

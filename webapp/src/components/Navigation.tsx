@@ -68,21 +68,6 @@ export default function Navigation() {
             🎲 Apps
           </Link>
 
-          {/* Reports Button */}
-          <Link
-            href="/reports"
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              pathname === '/reports'
-                ? theme === 'neon'
-                  ? 'bg-neon-action text-white shadow-lg'
-                  : 'bg-gradient-to-r from-quantum-500 to-stellar-500 text-white shadow-lg'
-                : theme === 'neon'
-                  ? 'bg-neon-panel/20 text-neon-text border border-neon-panel hover:bg-neon-panel/40'
-                  : 'bg-cosmic-700/50 text-quantum-300 border border-quantum-600/30 hover:bg-cosmic-700'
-            }`}
-          >
-            📊 Reports
-          </Link>
 
           {/* Theme Switcher */}
           <button

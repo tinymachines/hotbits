@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Call the TRNG FastAPI service
-    const trngResponse = await fetch('http://127.0.0.1:8000/api/integers', {
+    const trngResponse = await fetch('http://trng2:8000/api/integers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

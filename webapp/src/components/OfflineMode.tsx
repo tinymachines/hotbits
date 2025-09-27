@@ -57,9 +57,8 @@ export default function OfflineMode({ isOffline, onToggleOffline, refreshTrigger
     setIsExporting(true);
     try {
       const buffer = await exportDatabase();
-      // Handle both ArrayBuffer and Uint8Array cases
-      const data = buffer instanceof ArrayBuffer ? buffer : buffer.buffer || new ArrayBuffer(0);
-      const blob = new Blob([data], { type: 'application/octet-stream' });
+      // exportDatabase returns Uint8Array - convert to Array for Blob compatibility
+      const blob = new Blob([buffer.buffer as ArrayBuffer], { type: 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
