@@ -18,12 +18,12 @@ echo "Total samples: $SAMPLE_COUNT"
 cat "$INPUT_FILE" \
   | tr -d '\000' \
   | python src/analysis/extract.py \
-  --filter highpass:0.001 \
-  --filter detrend \
-  --method adaptive_threshold \
-  --postprocess von_neumann \
-  --stats \
-  --output binary > "$OUTPUT_FILE" 2> working/extraction.log
+	  --filter highpass:0.001 \
+	  --filter detrend \
+	  --method adaptive_threshold \
+	  --postprocess von_neumann \
+	  --stats \
+	  --output binary > "$OUTPUT_FILE" 2> working/extraction.log
 
 # Show statistics
 echo ""

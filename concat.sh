@@ -1,31 +1,66 @@
 #!/bin/bash
 
-cd /home/tinmac/hotbits
-DATA="/mnt/hotbits"
+ROOT="${HOME}/projects/hotbits"
+
+NIST="${ROOT}/repos/sts-2.1.2/sts-2.1.2"
+DIEHARDER="/usr/bin/dieharder"
+
+DATA="${ROOT}/data"
+WORKING="${ROOT}/working"
+LIVE="${ROOT}/live"
+COMPLETE="${ROOT}/complete"
+REPORTS="${ROOT}/reports"
+
+REMOTE="tinmac@trng2:/home/tinmac/hotbits/data"
+
+cd ${ROOT}
 
 function setup() {
-	rm -R ${DATA}/working/* &>/dev/null
-	mkdir -p ${DATA}/working &>/dev/null
+
+	rm -R ${WORKING}/* &>/dev/null
+
+	mkdir -p ${WORKING} &>/dev/null
+	mkdir -p ${LIVE} &>/dev/null
+	mkdir -p ${COMPLETE} &>/dev/null
+	mkdir -p ${REPORTS} &>/dev/null
+}
+
+function sync() {
+	rsync -az ${REMOTE}/ ${DATA}/
 }
 
 function generate() {
 	while read -ra ROW; do
 		echo "$(basename ${ROW})	${ROW}"
-	done<<<$(find ${DATA}/data -type f | grep -E "events[-][0-9]*.txt$" | sort) | sort
+	done<<<$(find ${DATA} -type f | grep -E "events[-][0-9]*.txt$" | sort) | sort
 }
 
 function concatenate() {
-	rm ${DATA}/working/concatenated.txt &>/dev/null
+	rm ${WORKING}/concatenated.txt &>/dev/null
 	generate | while read -r BASE FILE; do
-		cat ${FILE} >> ${DATA}/working/concatenated.txt
+		cat ${FILE} >>${WORKING}/concatenated.txt
 	done
 }
 
 function extract() {
-	./process_timeseries.sh \
-		${DATA}/working/concatenated.txt \
-		${DATA}/working/cleaned_random.bin \
-			&>${DATA}/working/extract.txt
+	${ROOT}/process_timeseries.sh \
+		${WORKING}/concatenated.txt \
+		${WORKING}/cleaned_random.bin \
+			&>${WORKING}/extract.txt
+}
+
+function nist() {
+	cd ${NIST}
+./assess 1000000 <<EOF
+0
+../../../working/random-truncated.bin
+1
+0
+1
+1
+EOF
+
+cd -
 }
 
 function prepare() {
@@ -40,7 +75,7 @@ function prepare() {
 	(( $(( ${SAMPLE_BITS}%8 ))==0 )) || TARGET=$(( TARGET+1 ))
 	
 	# Current binary size (Bits)
-	SIZE=$(( $(stat -t --format=%s ${DATA}/working/cleaned_random.bin)*8 ))
+	SIZE=$(( $(stat -t --format=%s ${WORKING}/cleaned_random.bin)*8 ))
 
 	# Needed bits vs actual (Bits)
 	DIFF=$(( ${SAMPLE_BITS}-SIZE ))
@@ -54,43 +89,71 @@ function prepare() {
 	echo "Difference (bits)	= ${DIFF}"
 	echo "Chunks needed	= ${CHUNKS}"
 
-	cp ${DATA}/working/cleaned_random.bin ${DATA}/working/random.bin
+	cp ${WORKING}/cleaned_random.bin ${WORKING}/random.bin
 
 	if (( CHUNKS>0 )); then
 		#rm ./working/random.bin &>/dev/null
 		for IDX in $(seq 1 ${CHUNKS}); do
 			echo "${IDX}"
-			cat ${DATA}/working/cleaned_random.bin >>${DATA}/working/random.bin
+			cat ${WORKING}/cleaned_random.bin >>${WORKING}/random.bin
 		done
 	fi
-	dd skip=0 count=${TARGET} if=${DATA}/working/random.bin of=${DATA}/working/random-truncated.bin bs=1 &>/dev/null
+	dd skip=0 count=${TARGET} if=${WORKING}/random.bin of=${WORKING}/random-truncated.bin bs=1 &>/dev/null
 
-	stat ${DATA}/working/random-truncated.bin
+	stat ${WORKING}/random-truncated.bin
 }
 
 function evaluate() {
-	scripts/nist-template.sh
-	cp -r repos/sts-2.1.2/sts-2.1.2/experiments/AlgorithmTesting ${DATA}/working/nist.txt
-	dieharder -a -f ${DATA}/working/random-truncated.bin | tee ${DATA}/working/dieharder.txt
+	#scripts/nist-template.sh
+	nist
+
+	cp -r ${ROOT}/repos/sts-2.1.2/sts-2.1.2/experiments/AlgorithmTesting \
+		${WORKING}/nist.txt
+
+	${DIEHARDER} -a -f ${WORKING}/random-truncated.bin \
+		| tee ${WORKING}/dieharder.txt
 }
 
 function backup() {
-	cp ${DATA}/working/random-truncated.bin \
-		${DATA}/live/hotbits.bin
-	mv ${DATA}/working ${DATA}/complete/$(date +%s)
-	find ${DATA}/complete/ -type f \
+
+	cp ${WORKING}/random-truncated.bin \
+		${LIVE}/hotbits.bin
+
+	mv ${WORKING} ${COMPLETE}/$(date +%s)
+
+	find ${COMPLETE}/ -type f \
 		| grep -E "final|dieharder" \
 		| while read -r ROW; do \
 			IFS="/" read -ra SRC<<<${ROW}
-			cp "${ROW}" "${DATA}/reports/${SRC[4]}-${SRC[-1]}"
+			cp "${ROW}" "${REPORTS}/${SRC[4]}-${SRC[-1]}"
 		done
 }
 
-setup
-concatenate
-extract
-prepare
-evaluate
-backup
+function main() {
 
-cd -
+	echo "Running Setup"
+	setup
+
+	echo "Syncing"
+	sync
+
+	echo "Running Concatenate"
+	concatenate
+
+	echo "Running Extract"
+	extract
+
+	echo "Running Prepare"
+	prepare
+
+	echo "Running Evaluate"
+	evaluate
+
+	echo "Running Backup"
+	backup
+
+	cd -
+
+}
+
+main 2>&1 | tee run.log
