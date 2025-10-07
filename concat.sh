@@ -11,7 +11,7 @@ function setup() {
 function generate() {
 	while read -ra ROW; do
 		echo "$(basename ${ROW})	${ROW}"
-	done<<<$(find ${DATA}/data -type f | grep -E "events[-][0-9]*.txt" | sort) | sort
+	done<<<$(find ${DATA}/data -type f | grep -E "events[-][0-9]*.txt$" | sort) | sort
 }
 
 function concatenate() {

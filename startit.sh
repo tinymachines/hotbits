@@ -4,19 +4,22 @@ cd /home/tinmac/hotbits
 
 [[ -f .pids ]] && exit || touch .pids
 
+function start_capture() {
+	timeout 60m src/trng/trng >./data/events-$(date +%s).txt
+}
+
 function handle_ctrlc() {
     while read -r KILL; do
-	kill "${KILL}"
+	kill -9 "${KILL}" &>./dev/null
     done<<<$(cat .pids)
     rm .pids
 }
 trap handle_ctrlc SIGINT
 
-src/trng/trng >./data/events-$(date +%s).txt &
+start_capture &
 
-PID=($!)
+PID=$!
 echo "${PID}">.pids
 
-sleep 60m
-handle_ctrlc
 wait
+handle_ctrlc
