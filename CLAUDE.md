@@ -24,9 +24,9 @@ path."
   the vhost belongs to `entropy-gate` and is copied verbatim by `scripts/nginx-conf.sh`.
 - **`/sensors` is the daemon's**, so the kit's sensors page is not routed here.
 - **No em dashes in shipped text.** US units. Plain English in commits.
-- **Git:** `main`, stage explicit paths. End commit messages with the trailer lines the harness gives you. The GitHub
-  home is not settled: `tinymachines/hotbits` is the original 2025 site (public); Brad decides whether this repo
-  replaces it there or lives under another name.
+- **Git:** `main` on `tinymachines/hotbits` (PUBLIC), stage explicit paths. End commit messages with the trailer lines
+  the harness gives you. Nothing private goes in: no LAN addresses, keys, or home paths. The original 2025 site is
+  kept on the branch and tag `archive/2025-site` (Brad's call, 2026-10-14).
 
 ## Where things came from
 

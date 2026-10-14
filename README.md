@@ -6,8 +6,8 @@ instrument live, its bytes drawn four ways, six games decided by real decay, and
 contrast, install and offline, sharing, accounts. Minted 2026-10-14 with the kit's `new-app.sh`; the third app on the kit
 after tinychase and AstroStack.
 
-It is the successor of two things. The original hotbits site (`tinymachines/hotbits` before this, a Next.js app of
-2025) had six small games on a form-based Python API; those games are back here, on the gateway's open tier. And the
+It is the successor of two things. The original hotbits site (a Next.js app of 2025, kept in this repository on the
+branch and tag `archive/2025-site`) had six small games on a form-based Python API; those games are back here, on the gateway's open tier. And the
 instrument pages of bradley.io/trng and tinymachines.ai/hotbits (the board, the four entropy views) are carried here
 beside the instrument they read.
 
