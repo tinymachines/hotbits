@@ -16,6 +16,8 @@ export const APP: AppConfig = {
   logo: "/logo.svg",
   logoDark: "/logo-dark.svg",
   protocol: "web+hotbits",
+  // No account service on this host (its /api is nothing; the daemon owns the other paths), so no Sign in anywhere.
+  accounts: false,
   build,
   // hotbits' own look: Ember, the hue the family's brand library (meatball-labs, 2026-10-07) holds for it in the
   // electric set (glow #ff8505, haze #322318). Every pairing passes the kit's contrast checks (text 15:1 on panels,
@@ -44,7 +46,6 @@ export const APP: AppConfig = {
       description: "How hotbits looks on your device: pick, build and share a theme, set the text size and the font. Every theme is checked for contrast before it can be kept." },
     { path: "/app", title: "This app", card: "plain", index: true, kicker: "app",
       description: "Install hotbits on your phone or computer. The pages work offline; the instrument needs the network." },
-    { path: "/account", title: "Your account", card: "plain", index: false, kicker: "account", description: "Sign in to hotbits with a passkey." },
     { path: "/share", title: "Shared with hotbits", card: "plain", index: false, kicker: "share",
       description: "What you have shared to hotbits from other apps. It stays on your device." },
   ],
@@ -66,8 +67,7 @@ export const APP: AppConfig = {
       { href: "/play/lottery", title: "Lottery", hint: "Tickets, without replacement." },
       { href: "/play/password", title: "Passwords", hint: "The arithmetic of entropy, shown." },
     ] },
-    { id: "you", title: "You", hint: "Your account, how the app looks, this device.", pages: [
-      { href: "/account", title: "Your account", hint: "A passkey.", me: true },
+    { id: "you", title: "You", hint: "How the app looks, this device.", pages: [
       { href: "/theme", title: "Themes", hint: "Colours, text size, the reading font." },
       { href: "/share", title: "Shared with hotbits", hint: "What other apps sent here." },
       { href: "/app", title: "This app", hint: "Install it; the pages work offline." },
@@ -80,7 +80,6 @@ export const APP: AppConfig = {
     { id: "api", label: "Reference", href: "/api" },
     { id: "theme", label: "Themes", href: "/theme" },
     { id: "app", label: "This app", href: "/app" },
-    { id: "account", label: "Account", href: "/account" },
   ],
   defaultShortcuts: ["instrument", "space", "play"],
 };

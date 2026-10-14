@@ -24,7 +24,7 @@ const count = (sel: string) => page.evaluate((s) => document.querySelectorAll(s)
 const waitFor = (sel: string, ms = 30_000) => page.waitForSelector(sel, { timeout: ms }).then(() => true).catch(() => false);
 
 // 1. every page, no errors, the frame, the default theme
-for (const p of ["/", "/instrument", "/space", "/play", "/play/dice", "/play/coins", "/play/cards", "/play/pick", "/play/lottery", "/play/password", "/api", "/theme", "/app", "/account", "/share", "/nowhere"]) {
+for (const p of ["/", "/instrument", "/space", "/play", "/play/dice", "/play/coins", "/play/cards", "/play/pick", "/play/lottery", "/play/password", "/api", "/theme", "/app", "/share", "/nowhere"]) {
   await page.goto(`${origin}${p}`, { waitUntil: "networkidle0" });
   const h1 = await text("main h1"), brand = await text("header .brand");
   const logo = await page.evaluate(() => (document.querySelector("header .brand img") as HTMLImageElement | null)?.naturalWidth ?? 0);
@@ -37,6 +37,7 @@ ok(sheet === "#19140f", `a new reader sees Ember (panels ${sheet})`);
 await page.goto(`${origin}/`, { waitUntil: "networkidle0" });
 await page.click("header .menu-btn"); await sleep(300);
 const doors = await page.evaluate(() => [...(document.getElementById("tc-menu")?.shadowRoot?.querySelectorAll("button, a") ?? [])].map((b) => b.textContent?.trim() ?? "").filter(Boolean));
+ok(!(await page.evaluate(() => /Sign in/.test(document.querySelector(".tc-foot")?.textContent ?? "") || /Sign in/.test(document.getElementById("tc-menu")?.shadowRoot?.textContent ?? ""))), "no Sign in anywhere: this host has no account service");
 ok(doors.some((d) => d.startsWith("The instrument")) && doors.some((d) => d.startsWith("Play")) && doors.some((d) => d.startsWith("You")), `the Menu lists the doors: ${doors.slice(0, 5).join(" | ")}`);
 
 // 2. the instrument: a measured figure, read from the live box through the server
