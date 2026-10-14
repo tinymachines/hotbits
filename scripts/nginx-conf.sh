@@ -8,7 +8,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export PATH="$HOME/.bun/bin:$PATH"
-names=$(bun -e 'import { API_NAMES } from "./src/api-paths"; console.log(API_NAMES.map((n) => n.replace(".", "\\.")).join("|"))')
+# "v1" is left out of the regex on purpose: the gateway's own `location /v1/` (a prefix) is in the spliced block, and a
+# regex location beats a prefix in nginx, so including it here would send the gateway's paths to the daemon (404).
+names=$(bun -e 'import { API_NAMES } from "./src/api-paths"; console.log(API_NAMES.filter((n) => n !== "v1").map((n) => n.replace(".", "\\.")).join("|"))')
 mkdir -p deploy
 cat > deploy/hotbits.tinymachines.ai.nginx <<NGINX
 # hotbits.tinymachines.ai: the hotbits app (tinymachines/hotbits, on @tinymachines/kit) at the base path, in front of

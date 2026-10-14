@@ -12,15 +12,17 @@ CONF=/etc/nginx/sites-enabled/$HOST.nginx     # sites-enabled holds real files o
 NEW=deploy/$HOST.nginx
 [[ -f "$NEW" ]] || { echo "refusing: $NEW is not there; run ./scripts/nginx-conf.sh first"; exit 1; }
 [[ -f "$CONF" ]] || { echo "refusing: $CONF is not there; this script expects the existing vhost"; exit 1; }
-[[ -d /etc/letsencrypt/live/$HOST ]] || { echo "refusing: no certificate at /etc/letsencrypt/live/$HOST"; exit 1; }
+sudo test -d /etc/letsencrypt/live/$HOST || { echo "refusing: no certificate at /etc/letsencrypt/live/$HOST"; exit 1; }
 grep -q '^# BEGIN entropy-gate' "$NEW" && grep -q 'location /v1/' "$NEW" || { echo "refusing: $NEW has lost the entropy-gate block"; exit 1; }
 if [[ ! -d "$ROOT" ]]; then sudo mkdir -p "$ROOT"; sudo chown "$USER":"$USER" "$ROOT"; echo "made $ROOT (owned by $USER)"; fi
 [[ -f "$ROOT/index.html" ]] || { echo "refusing: $ROOT has no index.html yet; build and rsync first (scripts/site-deploy.sh does both once this has run; for the first time: bun run build && rsync -a dist/ $ROOT/)"; exit 1; }
 if ! diff -q "$NEW" "$CONF" >/dev/null; then
-  sudo cp "$CONF" "$CONF.bak-$(date +%Y%m%d-%H%M%S)"
+  # the backup goes OUTSIDE sites-enabled: nginx globs that directory, and a .bak beside the live file is a second
+  # server block for the same name (nginx warns "conflicting server name ... ignored" and keeps the old one)
+  sudo mkdir -p /etc/nginx/backups && sudo cp "$CONF" "/etc/nginx/backups/$HOST.nginx.bak-$(date +%Y%m%d-%H%M%S)"
   sudo cp "$NEW" "$CONF"
   sudo cp "$NEW" /etc/nginx/sites-available/$HOST.nginx 2>/dev/null || true
-  echo "installed $NEW as $CONF (the old one is beside it, .bak-<stamp>)"
+  echo "installed $NEW as $CONF (the old one is in /etc/nginx/backups/)"
 fi
 sudo nginx -t
 sudo systemctl reload nginx

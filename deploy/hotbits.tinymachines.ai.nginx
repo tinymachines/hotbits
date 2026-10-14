@@ -63,7 +63,7 @@ location ~ ^/random/(bytes|hex|integers|raw)$ {
     # The daemon's own addresses, as before: status, measurements, the archive, analysis, reports, its reference.
     # A regex location, so it is matched before the prefix `location /` below; the 410 block above is earlier in
     # the file and wins for the four closed paths.
-    location ~ ^/(v1|health|stats|metrics|battery|random|analysis|longterm|incidents|events|timeseries|sensors|dispersion|reports|docs|redoc|openapi\.json)(/|$) {
+    location ~ ^/(health|stats|metrics|battery|random|analysis|longterm|incidents|events|timeseries|sensors|dispersion|reports|docs|redoc|openapi\.json)(/|$) {
         proxy_pass              http://trng.local:8000;
         proxy_http_version      1.1;
         proxy_set_header        Host $host;
