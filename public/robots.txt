@@ -1,2 +1,7 @@
+# hotbits.tinymachines.ai: open to search engines and agents. The instrument's own paths (the daemon and the gateway)
+# are not pages; the fresh pool is behind a key anyway.
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /v1/
+Disallow: /random/
+Disallow: /analysis/
