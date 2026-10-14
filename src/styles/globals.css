@@ -1,0 +1,8 @@
+/* Layer order first: kiosk sits above Tailwind's preflight (so the kiosk look is the base) and
+   below utilities. Tailwind scans this app's src/ and the kit's. */
+@layer theme, base, kiosk, components, utilities;
+@import "tailwindcss" source("../../src");
+@import "@tinymachines/kit/styles/kiosk.css" layer(kiosk);
+@import "@tinymachines/kit/styles/chrome.css" layer(kiosk);
+@import "@tinymachines/kit/styles/controls.css" layer(kiosk);
+@import "@tinymachines/kit/styles/base.css";

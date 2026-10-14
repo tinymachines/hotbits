@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Favicons -->
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" sizes="48x48" type="image/png" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- iOS PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="hotbits" />
+
+    <!-- Theme & SEO -->
+    <meta name="theme-color" content="#112658" />
+    <!-- Each address's own head: the account service (api/seo.py) replaces what is between these marks
+         with the address's title, description, canonical, preview tags and share picture. -->
+    <!--tc:head-->
+    <title>hotbits</title>
+    <meta name="description" content="What this app does, in one line." />
+    <meta property="og:title" content="hotbits" />
+    <meta property="og:description" content="What this app does, in one line." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hotbits.tinymachines.ai/" />
+    <meta property="og:image" content="/logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!--/tc:head-->
+
+    <!-- Disable phone number detection -->
+    <meta name="format-detection" content="telephone=no" />
+    <!-- system fonts; no CDN (a PWA that installs should not depend on another host for its type) -->
+
+
+    <!-- The reader's theme, painted before the app loads so a dark theme never flashes light
+         (src/lib/theme.ts keeps this copy current). -->
+    <script>try{var c=localStorage.getItem("hotbits:theme-css");if(c){var s=document.createElement("style");s.id="tc-theme";s.textContent=c;document.head.appendChild(s)}}catch(e){}</script>
+
+    <!-- Safe area CSS variables -->
+    <style>
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
