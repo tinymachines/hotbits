@@ -1,5 +1,6 @@
-# hotbits.tinymachines.ai: open to search engines and agents. The instrument's own paths (the daemon and the gateway)
-# are not pages; the fresh pool is behind a key anyway.
+# hotbits.tinymachines.ai: open to search engines and agents (the kit's standard robots.txt, tinymachines/kit scripts/new-app.sh).
+# A page kept out of search results says index: false in src/app.config.ts; the kit writes its noindex.
+# The instrument's own paths (the gateway, the archive, the daemon's analysis) are not pages.
 User-agent: *
 Allow: /
 Disallow: /v1/
