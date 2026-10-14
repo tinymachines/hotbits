@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { usePath, navigate, onLink } from "@tinymachines/kit/lib/router";
+import { usePath, navigate } from "@tinymachines/kit/lib/router";
 import { useAccount } from "@tinymachines/kit/lib/account";
 import { describe } from "@tinymachines/kit/lib/seo";
 import { applyHead } from "@tinymachines/kit/lib/head";
@@ -8,30 +8,21 @@ import { SiteFooter } from "@tinymachines/kit/components/SiteFooter";
 import { UpdateBar } from "@tinymachines/kit/components/UpdateBar";
 import { SharePanel } from "@tinymachines/kit/components/SharePanel";
 import ThemePage from "@tinymachines/kit/pages/ThemePage";
-import SensorsPage from "@tinymachines/kit/pages/SensorsPage";
 import SharePage from "@tinymachines/kit/pages/SharePage";
 import AppPage from "@tinymachines/kit/pages/AppPage";
 import Account from "@tinymachines/kit/pages/Account";
-import { app } from "@tinymachines/kit/app";
-
-function Home() {
-  return (
-    <article>
-      <p className="kicker">{app().name} · <b>home</b></p>
-      <h1>{app().name}</h1>
-      <p className="lede">{app().tagline}</p>
-      <p className="controls">
-        <a className="btn" href="/theme" onClick={onLink}>Themes</a>
-        <a className="btn quiet" href="/sensors" onClick={onLink}>Sensors</a>
-        <a className="btn quiet" href="/app" onClick={onLink}>This app</a>
-      </p>
-    </article>
-  );
-}
-
-function NotHere({ path }: { path: string }) {
-  return <article><h1>Not here</h1><p>There is no page at {path}.</p><p><a href="/" onClick={onLink}>Home</a></p></article>;
-}
+import Home from "./pages/Home";
+import Instrument from "./pages/Instrument";
+import Space from "./pages/Space";
+import Play from "./pages/Play";
+import Dice from "./pages/play/Dice";
+import Coins from "./pages/play/Coins";
+import Cards from "./pages/play/Cards";
+import Pick from "./pages/play/Pick";
+import Lottery from "./pages/play/Lottery";
+import Password from "./pages/play/Password";
+import Reference from "./pages/Reference";
+import NotHere from "./pages/NotHere";
 
 export function App() {
   const path = usePath();
@@ -41,8 +32,17 @@ export function App() {
   useEffect(() => { applyHead(describe(location.pathname, location.search)); }, [path]);
   let page: React.ReactNode;
   if (path === "/") page = <Home />;
+  else if (path === "/instrument") page = <Instrument />;
+  else if (path === "/space") page = <Space />;
+  else if (path === "/play") page = <Play />;
+  else if (path === "/play/dice") page = <Dice />;
+  else if (path === "/play/coins") page = <Coins />;
+  else if (path === "/play/cards") page = <Cards />;
+  else if (path === "/play/pick") page = <Pick />;
+  else if (path === "/play/lottery") page = <Lottery />;
+  else if (path === "/play/password") page = <Password />;
+  else if (path === "/api") page = <Reference />;
   else if (path === "/theme") page = <ThemePage />;
-  else if (path === "/sensors") page = <SensorsPage />;
   else if (path === "/share") page = <SharePage />;
   else if (path === "/app") page = <AppPage />;
   else if (path === "/account") page = <Account />;

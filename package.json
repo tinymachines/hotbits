@@ -4,14 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4410",
+    "dev": "vite --port 4430",
     "build": "tsc -b && vite build",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "lint": "eslint . --max-warnings 0",
+    "check": "scripts/check.sh"
   },
   "dependencies": {
     "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.1.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "three": "0.184.0",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
@@ -20,6 +23,7 @@
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@types/three": "0.184.0",
     "@vitejs/plugin-react": "^4.5.2",
     "@webgpu/types": "^0.1.74",
     "eslint": "^9.28.0",
