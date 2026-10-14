@@ -99,6 +99,7 @@ export default function Instrument() {
         <p>NIST SP 800-90B runs two tests on every sample as it arrives: a repetition count, and an adaptive proportion test over a sliding window. Either one failing means the source is producing something other than noise, and those bits are discarded.</p>
         {cont?.available ? (
           <>
+            <div className="hb-scroll" tabIndex={0} role="region" aria-label="The two tests">
             <table className="hb-readout">
               <tbody>
                 <tr><th>Repetition count <Tag state={cont.rct.failed_ever ? "fail" : "live"}>{cont.rct.failed_ever ? "tripped" : "passing"}</Tag></th><td className="n">{grouped(cont.rct.max_run_seen)} / {grouped(cont.rct.cutoff)}</td><td className="note">longest identical run ever seen / the cutoff</td></tr>
@@ -107,6 +108,7 @@ export default function Instrument() {
                 <tr><th>Bits processed</th><td className="n">{grouped(cont.total_bits_processed)}</td><td className="note">since the stream opened</td></tr>
               </tbody>
             </table>
+            </div>
             <p className="note">These are all-time marks, so a repetition count reading &ldquo;tripped&rdquo; means the longest run ever seen reached the cutoff at some point over {grouped(cont.total_bits_processed)} bits, not that it is failing now. The current run is {grouped(cont.rct.current_run_length)}.</p>
           </>
         ) : <p className="note">{inst.asked ? "no continuous-health snapshot" : "asking"}</p>}

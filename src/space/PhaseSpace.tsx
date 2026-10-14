@@ -86,7 +86,7 @@ export default function PhaseSpace() {
         {overlay ? <div className="hb-fallback">{overlay}</div> : null}
         <span className="hb-hint" aria-hidden="true">{rows ? `${rows.length} windows · last 24 h` : ""}</span>
       </div>
-      <p className="legend"><span><i style={{ background: "var(--mute)" }} />x: bias</span><span><i style={{ background: "var(--mute)" }} />y: entropy, bits/byte</span><span><i style={{ background: "var(--mute)" }} />z: chi-square p</span><span className="hb-ramp"><i />oldest to newest</span></p>
+      <p className="legend"><span>x: bias</span><span>y: entropy, bits/byte</span><span>z: chi-square p</span><span className="hb-ramp"><i />oldest to newest</span></p>
       <p className="hb-caption"><b>Quality, drifting in real time.</b> Each dot is an hour's trailing mean of the source's health: bias, Shannon entropy and the chi-square uniformity p-value. A healthy source hovers in a tight knot near the origin; sustained drift in any direction is the first sign of trouble, and it would show here before any single test reported it.</p>
     </div>
   );
