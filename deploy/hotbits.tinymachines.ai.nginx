@@ -6,8 +6,7 @@
 #   everything else                     the app: static files, index.html for its routes
 # The daemon's path list is src/api-paths.ts in the app's repo and this file is written from it by
 # scripts/nginx-conf.sh; the service worker and the dev proxy read the same list.
-# History of the upstream: trng2:8000 (dead) -> 192.168.1.197 (2026-05-07) -> .124 (06-20) -> .118 (06-21) ->
-# 13.0.0.253 (07-01) -> trng.local (07-01, mDNS) -> nesbench, v3 (2026-10-11).
+# The upstream is found by mDNS (trng.local), so the box can move on the LAN without an edit here.
 
 server {
 # BEGIN entropy-gate (managed by deploy/install.sh)
