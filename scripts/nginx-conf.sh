@@ -54,6 +54,17 @@ $(sed -n '/^# BEGIN entropy-gate/,/^# END entropy-gate/p' /etc/nginx/sites-enabl
     location = /sw.js { add_header Cache-Control "no-cache" always; }
     location = /manifest.webmanifest { types { application/manifest+json webmanifest; } add_header Cache-Control "no-cache" always; }
     location /assets/ { add_header Cache-Control "public, max-age=31536000, immutable" always; }
+    # sign-in: the kit's account service, shared by every app on the kit (kit-accounts, accounts.tinymachines.ai). Its
+    # own Host names the site; the trailing slash strips /api.
+    location /api/ {
+        proxy_pass              http://127.0.0.1:8120/;
+        proxy_http_version      1.1;
+        proxy_set_header        Host \$host;
+        proxy_set_header        X-Real-IP \$remote_addr;
+        proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto \$scheme;
+        client_max_body_size    2m;     # a file goes up in 1 MiB pieces (server/accounts/files.py)
+    }
     location / { try_files \$uri \$uri/ /index.html; }
 
     listen 443 ssl;                                                        # managed by Certbot

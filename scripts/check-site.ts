@@ -2,9 +2,13 @@
 // instrument's paths passed through to the live box): every page opens with no error and the frame carries the name
 // and the mark; a new reader sees Ember; the Menu lists the doors; the instrument page shows a measured pool figure;
 // every one of the four views draws; each game produces a result in range with a receipt; the reference lists the
-// daemon's operations; the app opens offline. Ends in ALL OK or a failure.
+// daemon's operations; the footer and the Menu offer a Sign in (the kit's shared account service); Your files keeps a picked
+// file on this device and a file shared from another app lands there; the app opens offline. Ends in ALL OK or a failure.
 //   bun run scripts/check-site.ts [origin]      default http://127.0.0.1:4431 (scripts/check.sh starts the server)
 import puppeteer, { type Page } from "puppeteer-core";
+import { mkdtempSync as kfMkdtemp, writeFileSync as kfWrite } from "node:fs";
+import { tmpdir as kfTmp } from "node:os";
+import { join as kfJoin } from "node:path";
 
 const origin = (process.argv[2] ?? "http://127.0.0.1:4431").replace(/\/$/, "");
 let fails = 0;
@@ -16,7 +20,7 @@ const page: Page = await ctx.newPage();
 const errors: string[] = [];
 let offline = false;
 page.on("pageerror", (e) => errors.push(e.message));
-page.on("console", (m) => { if (m.type() === "error" && !offline) errors.push(m.text()); });
+page.on("console", (m) => { if (m.type() === "error" && !offline && !/status of 401/.test(m.text())) errors.push(m.text()); });   // 401: the account service, to a reader not signed in
 page.on("dialog", (d) => void d.accept());
 await page.setViewport({ width: 390, height: 844 });
 const text = (sel: string) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim() ?? "", sel);
@@ -24,7 +28,7 @@ const count = (sel: string) => page.evaluate((s) => document.querySelectorAll(s)
 const waitFor = (sel: string, ms = 30_000) => page.waitForSelector(sel, { timeout: ms }).then(() => true).catch(() => false);
 
 // 1. every page, no errors, the frame, the default theme
-for (const p of ["/", "/instrument", "/space", "/play", "/play/dice", "/play/coins", "/play/cards", "/play/pick", "/play/lottery", "/play/password", "/api", "/theme", "/app", "/share", "/nowhere"]) {
+for (const p of ["/", "/instrument", "/space", "/play", "/play/dice", "/play/coins", "/play/cards", "/play/pick", "/play/lottery", "/play/password", "/api", "/theme", "/app", "/share", "/account", "/files", "/nowhere"]) {
   await page.goto(`${origin}${p}`, { waitUntil: "networkidle0" });
   const h1 = await text("main h1"), brand = await text("header .brand");
   const logo = await page.evaluate(() => (document.querySelector("header .brand img") as HTMLImageElement | null)?.naturalWidth ?? 0);
@@ -37,7 +41,7 @@ ok(sheet === "#19140f", `a new reader sees Ember (panels ${sheet})`);
 await page.goto(`${origin}/`, { waitUntil: "networkidle0" });
 await page.click("header .menu-btn"); await sleep(300);
 const doors = await page.evaluate(() => [...(document.getElementById("tc-menu")?.shadowRoot?.querySelectorAll("button, a") ?? [])].map((b) => b.textContent?.trim() ?? "").filter(Boolean));
-ok(!(await page.evaluate(() => /Sign in/.test(document.querySelector(".tc-foot")?.textContent ?? "") || /Sign in/.test(document.getElementById("tc-menu")?.shadowRoot?.textContent ?? ""))), "no Sign in anywhere: this host has no account service");
+ok(await page.evaluate(() => /Sign in/.test(document.querySelector(".tc-foot")?.textContent ?? "") || /Sign in/.test(document.getElementById("tc-menu")?.shadowRoot?.textContent ?? "")), "a Sign in is offered: the kit's shared account service");
 ok(doors.some((d) => d.startsWith("The instrument")) && doors.some((d) => d.startsWith("Play")) && doors.some((d) => d.startsWith("You")), `the Menu lists the doors: ${doors.slice(0, 5).join(" | ")}`);
 
 // 2. the instrument: a measured figure, read from the live box through the server
@@ -90,6 +94,35 @@ ok(await waitFor("#password") && (await text("#password")).length === 16, `a 16-
 // 5. the reference reads the daemon's schema
 await page.goto(`${origin}/api`, { waitUntil: "networkidle0" });
 ok(await waitFor("#routes tbody tr") && (await count("#routes tbody tr")) >= 20, `the reference lists ${await count("#routes tbody tr")} operations from /openapi.json`);
+
+// 5b. your files, signed out: a file picked through <tc-pick> is kept on this device, and opens (the kit's Your files)
+const kfSample = kfJoin(kfMkdtemp(kfJoin(kfTmp(), "hotbits-check-")), "hello.txt");
+kfWrite(kfSample, "hello from hotbits' check\n");
+await page.goto(`${origin}/files`, { waitUntil: "networkidle0" });
+const kfInput = await page.evaluateHandle(() => document.querySelector("tc-pick")!.shadowRoot!.querySelector("input.files"));
+await (kfInput as unknown as { uploadFile(p: string): Promise<void> }).uploadFile(kfSample);
+let kfRows: string[] = [];
+for (let i = 0; i < 40 && !kfRows.some((r) => r.startsWith("hello.txt")); i++) { await sleep(250); kfRows = await page.evaluate(() => [...document.querySelectorAll(".kfiles li")].map((li) => `${li.querySelector(".open")?.textContent} | ${li.querySelector(".state")?.textContent}`)); }
+ok(kfRows.some((r) => /^hello\.txt \| On this device/.test(r)), `your files: a picked file is kept on this device (${kfRows.join("; ")})`);
+await page.evaluate(() => [...document.querySelectorAll<HTMLElement>(".kfiles .open")].find((e) => e.textContent?.includes("hello.txt"))?.click());
+await page.waitForSelector(".kfile-view pre", { timeout: 4000 }).catch(() => null);
+ok((await text(".kfile-view pre")).startsWith("hello from hotbits' check"), "your files: opening it shows what it holds");
+// a file shared to hotbits from another app (the Share menu's multipart POST, taken by the service worker) lands there
+await page.goto(`${origin}/app`, { waitUntil: "networkidle0" });
+await page.evaluate(() => navigator.serviceWorker.ready);
+const kfLanded = await page.evaluate(async () => {
+  const form = new FormData();
+  form.append("files", new File(["shared from another app\n"], "shared note.txt", { type: "text/plain" }));
+  const r = await fetch("/share", { method: "POST", body: form });
+  return new URL(r.url).pathname + new URL(r.url).search;
+});
+await page.goto(`${origin}${kfLanded}`, { waitUntil: "networkidle0" });
+await page.waitForFunction(() => /Open it in Your files/.test(document.querySelector("main")?.textContent ?? ""), { timeout: 8000 }).catch(() => null);
+ok(/Open it in Your files/.test(await text("main")), `share: the share page says the file went to Your files (${kfLanded})`);
+await page.goto(`${origin}/files`, { waitUntil: "networkidle0" });
+kfRows = [];
+for (let i = 0; i < 40 && !kfRows.some((r) => r.startsWith("shared note.txt")); i++) { await sleep(250); kfRows = await page.evaluate(() => [...document.querySelectorAll(".kfiles li .open")].map((b) => b.textContent ?? "")); }
+ok(kfRows.includes("shared note.txt"), `share: it is in Your files (${kfRows.join("; ")})`);
 
 // 6. offline
 await page.goto(`${origin}/app`, { waitUntil: "networkidle0" }); await sleep(1500);

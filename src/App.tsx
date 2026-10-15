@@ -10,6 +10,8 @@ import { SharePanel } from "@tinymachines/kit/components/SharePanel";
 import ThemePage from "@tinymachines/kit/pages/ThemePage";
 import SharePage from "@tinymachines/kit/pages/SharePage";
 import AppPage from "@tinymachines/kit/pages/AppPage";
+import Account from "@tinymachines/kit/pages/Account";
+import FilesPage from "@tinymachines/kit/pages/FilesPage";
 import Home from "./pages/Home";
 import Instrument from "./pages/Instrument";
 import Space from "./pages/Space";
@@ -44,6 +46,8 @@ export function App() {
   else if (path === "/theme") page = <ThemePage />;
   else if (path === "/share") page = <SharePage />;
   else if (path === "/app") page = <AppPage />;
+  else if (path === "/account") page = <Account />;
+  else if (path === "/files") page = <FilesPage />;
   else page = <NotHere path={path} />;
   return (
     <>
