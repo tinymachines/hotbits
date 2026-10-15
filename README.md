@@ -24,11 +24,11 @@ src/pages/             Home, Instrument, Space, Play, play/{Dice,Coins,Cards,Pic
 src/space/             the four views: EntropyCube (three.js, beside RANDU), ReturnMap, BitRaster, PhaseSpace
 src/styles/hotbits.css the app's own rules, in the kiosk vocabulary, tokens only
 public/logo.svg        the mark: a 6 x 6 field of real decay bits, baked from /v1/seeds on 2026-10-14 (lit cells are ones)
-scripts/check.sh       typecheck, lint, build, then Chrome against the live instrument (check-site.ts); ends ALL OK
-scripts/serve.ts       dist/ the way nginx serves it, the instrument's paths passed through: for the check
+scripts/check.sh       the kit's `kit check` with the instrument's paths passed through: typecheck, lint, build, then
+                       Chrome against the live instrument (check-site.ts); ends ALL OK
 scripts/nginx-conf.sh  writes deploy/hotbits.tinymachines.ai.nginx from api-paths.ts, keeping the gateway's block
 scripts/site-setup.sh  installs that vhost and the root (sudo; Brad's go: a network change on impera)
-scripts/site-deploy.sh build + rsync to /var/www/hotbits.tinymachines.ai; refuses without a passed check on HEAD
+bun run deploy         the kit's `kit deploy`: build + rsync to /var/www/hotbits.tinymachines.ai; refuses without a passed check on HEAD
 ```
 
 ## The host
@@ -67,7 +67,7 @@ claims measured. And this app's own:
 bun install
 bun run dev                  # http://localhost:4430; the instrument's paths are proxied to the live site
 ./scripts/check.sh           # typecheck, lint, build, Chrome against the live instrument; ends ALL OK, records out/check-ok
-./scripts/site-deploy.sh     # after the check, on a clean tree: build + rsync + compare the live sw.js
+bun run deploy               # kit deploy, after the check, on a clean tree: build + rsync + compare the live sw.js
 ```
 
 The check needs `/usr/bin/google-chrome` and the live instrument answering. It drives the real box: the pool figure,

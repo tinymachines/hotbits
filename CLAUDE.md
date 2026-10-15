@@ -13,8 +13,8 @@ path."
 
 ## Rules
 
-- **`./scripts/check.sh` must end in `ALL OK`** before a commit that changes `src/`, and `scripts/site-deploy.sh`
-  refuses without it on HEAD. It drives the real instrument.
+- **`./scripts/check.sh` must end in `ALL OK`** before a commit that changes `src/`, and `bun run deploy` (the kit's
+  `kit deploy`) refuses without it on HEAD. It drives the real instrument.
 - **The kit's rules hold** (its CLAUDE.md): bun only; no CDN at runtime; large type and high contrast; themes checked
   for contrast; `defineApp()` first (`src/app.ts`, imported first by `main.tsx`); `app.config.ts` is plain data; a fix
   that belongs to every app goes in the kit, tagged, never patched here.

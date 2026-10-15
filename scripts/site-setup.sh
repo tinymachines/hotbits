@@ -15,7 +15,7 @@ NEW=deploy/$HOST.nginx
 sudo test -d /etc/letsencrypt/live/$HOST || { echo "refusing: no certificate at /etc/letsencrypt/live/$HOST"; exit 1; }
 grep -q '^# BEGIN entropy-gate' "$NEW" && grep -q 'location /v1/' "$NEW" || { echo "refusing: $NEW has lost the entropy-gate block"; exit 1; }
 if [[ ! -d "$ROOT" ]]; then sudo mkdir -p "$ROOT"; sudo chown "$USER":"$USER" "$ROOT"; echo "made $ROOT (owned by $USER)"; fi
-[[ -f "$ROOT/index.html" ]] || { echo "refusing: $ROOT has no index.html yet; build and rsync first (scripts/site-deploy.sh does both once this has run; for the first time: bun run build && rsync -a dist/ $ROOT/)"; exit 1; }
+[[ -f "$ROOT/index.html" ]] || { echo "refusing: $ROOT has no index.html yet; build and rsync first (bun run deploy does both once this has run; for the first time: bun run build && rsync -a dist/ $ROOT/)"; exit 1; }
 if ! diff -q "$NEW" "$CONF" >/dev/null; then
   # the backup goes OUTSIDE sites-enabled: nginx globs that directory, and a .bak beside the live file is a second
   # server block for the same name (nginx warns "conflicting server name ... ignored" and keeps the old one)
@@ -27,4 +27,4 @@ fi
 sudo nginx -t
 sudo systemctl reload nginx
 for p in / /health "/v1/seeds?n=1" /docs /random/bytes; do printf '%-16s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "https://$HOST$p")"; done
-echo "ok: https://$HOST serves $ROOT in front of the daemon. Next: ./scripts/site-deploy.sh after every change."
+echo "ok: https://$HOST serves $ROOT in front of the daemon. Next: bun run check, then bun run deploy, after every change."
