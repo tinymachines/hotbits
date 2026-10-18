@@ -91,5 +91,5 @@ export const APP: AppConfig = {
     { id: "files", label: "Your files", href: "/files" },
     { id: "account", label: "Account", href: "/account" },
   ],
-  defaultShortcuts: ["instrument", "space", "play"],
+  defaultShortcuts: ["instrument", "space", "play", "scan"],
 };
