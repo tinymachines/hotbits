@@ -85,6 +85,7 @@ export const APP: AppConfig = {
     { id: "space", label: "Drawn", href: "/space" },
     { id: "play", label: "Play", href: "/play" },
     { id: "api", label: "Reference", href: "/api" },
+    { id: "scan", label: "Scan", href: "/scan" },
     { id: "theme", label: "Themes", href: "/theme" },
     { id: "app", label: "This app", href: "/app" },
     { id: "files", label: "Your files", href: "/files" },
