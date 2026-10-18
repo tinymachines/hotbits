@@ -42,6 +42,8 @@ export const APP: AppConfig = {
     { path: "/play/password", title: "Passwords", card: "plain", index: true, kicker: "play", description: "How a password's entropy is counted, with the characters chosen by decay bits. Replayed bits, so a demonstration and not a secret." },
     { path: "/api", title: "The reference", card: "plain", index: true, kicker: "the API",
       description: "Every address the instrument answers, read from its own OpenAPI schema when the page loads, and the gateway's four: which are open, which need a key, and which are closed." },
+    { path: "/scan", title: "Scan a code", card: "plain", index: true, kicker: "scan",
+      description: "Read a QR code with the camera or from a photo, on this phone, and see what it holds before anything opens." },
     { path: "/theme", title: "Themes", card: "theme", index: true, kicker: "theme",
       description: "How hotbits looks on your device: pick, build and share a theme, set the text size and the font. Every theme is checked for contrast before it can be kept." },
     { path: "/app", title: "This app", card: "plain", index: true, kicker: "app",
@@ -71,6 +73,7 @@ export const APP: AppConfig = {
     ] },
     { id: "you", title: "You", hint: "Your account, your files, how the app looks, this device.", pages: [
       { href: "/account", title: "Your account", hint: "A passkey.", me: true },
+      { href: "/scan", title: "Scan a code", hint: "A QR code, with the camera or from a photo." },
       { href: "/theme", title: "Themes", hint: "Colours, text size, the reading font." },
       { href: "/files", title: "Your files", hint: "Kept here and, signed in, in your account." },
       { href: "/share", title: "Shared with hotbits", hint: "What other apps sent here." },
