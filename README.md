@@ -28,6 +28,9 @@ scripts/check.sh       the kit's `kit check` with the instrument's paths passed 
                        Chrome against the live instrument (check-site.ts); ends ALL OK
 scripts/nginx-conf.sh  writes deploy/hotbits.tinymachines.ai.nginx from api-paths.ts, keeping the gateway's block
 scripts/site-setup.sh  installs that vhost and the root (sudo; Brad's go: a network change on impera)
+scripts/api-setup.sh   installs hotbits' own API's unit (deploy/hotbits-api.service, its user and path filled in), starts it
+api/                   hotbits' own API: FastAPI on the kit's kitapi, 127.0.0.1:8170 (uv run --directory api pytest)
+app.yaml               the manifest: what the app is (kit check holds it to src/app.config.ts; /api/v1/about serves it)
 bun run deploy         the kit's `kit deploy`: build + rsync to /var/www/hotbits.tinymachines.ai; refuses without a passed check on HEAD
 ```
 
@@ -40,6 +43,9 @@ hotbits.tinymachines.ai is one hostname with three things behind it, told apart 
   project's `deploy/install.sh` and is kept verbatim.
 - the daemon's own paths (`src/api-paths.ts`): the Geiger daemon on the Pi, `trng.local:8000` (`tinymachines/geiger`,
   `api/`). Four of them, `/random/{bytes,hex,integers,raw}`, are closed with a 410 that names the replacement.
+- `/api/`: the kit's account routes (sign-in, the account, Your files, push) go to the kit's shared account
+  service; the rest goes to hotbits' own API (`api/`, `hotbits-api.service` on 127.0.0.1:8170, path kept), which
+  answers the kit's base routes, `/api/v1/health`, `/about` (the manifest and the commit running) and `/whoami`.
 - everything else: this app, static files from `/var/www/hotbits.tinymachines.ai`.
 
 Before 2026-10-14 the base path proxied the daemon too, so `/` answered 404 and `/docs` was the front door. Nothing an

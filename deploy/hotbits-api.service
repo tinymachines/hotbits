@@ -1,0 +1,38 @@
+# hotbits.tinymachines.ai/api: hotbits' own API, FastAPI on the kit's kitapi, on 127.0.0.1:8170 behind nginx.
+# nginx (scripts/nginx-conf.sh) sends the kit's account routes to the account service and the rest of /api/ here,
+# path kept, so routes are /api/v1/.... `kit deploy` syncs api/'s packages and restarts this unit and waits for
+# /api/v1/health. StateDirectory makes /var/lib/hotbits-api (0700) as $STATE_DIRECTORY. Logs: journalctl -u hotbits-api.
+#
+# The repo is public, so this file names no user and no home path: @USER@ and @HERE@ (the checkout) are filled in
+# by scripts/api-setup.sh, which installs the result in /etc/systemd/system. Do not `sudo cp` this file as it is,
+# and do not run `kit setup` here (it would, and its nginx would drop the entropy gateway's block).
+
+[Unit]
+Description=hotbits API (FastAPI), hotbits.tinymachines.ai/api
+After=network.target
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@HERE@
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Environment=KIT_ACCOUNTS=http://127.0.0.1:8120
+Environment=KIT_SITE=https://hotbits.tinymachines.ai
+
+StateDirectory=hotbits-api
+StateDirectoryMode=0700
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectControlGroups=true
+ProtectKernelTunables=true
+RestrictSUIDSGID=true
+ExecStart=@HERE@/api/.venv/bin/python -m uvicorn app:app --app-dir api --host 127.0.0.1 --port 8170
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

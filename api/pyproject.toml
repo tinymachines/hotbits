@@ -1,0 +1,27 @@
+[project]
+name = "hotbits-api"
+version = "0.1.0"
+description = "hotbits's own API: FastAPI on 127.0.0.1:8170 behind nginx (an app on @tinymachines/kit)."
+requires-python = ">=3.12"
+dependencies = [
+    "kitapi @ git+ssh://git@github.com/tinymachines/kit.git@v0.3.23#subdirectory=py",
+    "uvicorn>=0.30",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+# Real errors only, not style (the kit's account service has the same rules).
+[tool.ruff]
+line-length = 160
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E9", "F", "B"]
+ignore = ["B008"]

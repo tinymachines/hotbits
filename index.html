@@ -36,9 +36,6 @@
     <!-- system fonts; no CDN (a PWA that installs should not depend on another host for its type) -->
 
 
-    <!-- The reader's theme, painted before the app loads so a dark theme never flashes light
-         (src/lib/theme.ts keeps this copy current). -->
-    <script>try{var c=localStorage.getItem("hotbits:theme-css");if(c){var s=document.createElement("style");s.id="tc-theme";s.textContent=c;document.head.appendChild(s)}}catch(e){}</script>
 
     <!-- Safe area CSS variables -->
     <style>
@@ -51,6 +48,10 @@
     </style>
   </head>
   <body>
+    <!-- The reader's theme, painted before the app loads so a dark theme never flashes light (src/lib/theme.ts keeps
+         this copy current). The first thing in the body, not in the head: by now the head and its stylesheets are
+         read, so the theme lands after them and its tokens win (the kit's template since v0.3.21). -->
+    <script>try{var c=localStorage.getItem("hotbits:theme-css");if(c){var s=document.createElement("style");s.id="tc-theme";s.textContent=c;document.head.appendChild(s)}}catch(e){}</script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

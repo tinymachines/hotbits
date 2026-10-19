@@ -16,8 +16,11 @@ export const APP: AppConfig = {
   logo: "/logo.svg",
   logoDark: "/logo-dark.svg",
   protocol: "web+hotbits",
-  // the kit's shared account service (nginx sends /api/ to it; the daemon owns the other paths) and Your files at /files
+  // the kit's shared account service (nginx sends its routes under /api/ to it; the daemon owns the other paths) and
+  // Your files at /files
   yourFiles: "/files",
+  // hotbits' own API (api/, hotbits-api.service), FastAPI on the kit's kitapi: the rest of /api/; app.yaml says the same port
+  api: { port: 8170 },
   build,
   // hotbits' own look: Ember, the hue the family's brand library (meatball-labs, 2026-10-07) holds for it in the
   // electric set (glow #ff8505, haze #322318). Every pairing passes the kit's contrast checks (text 15:1 on panels,

@@ -23,6 +23,12 @@ path."
 - **The host is Brad's.** `scripts/site-setup.sh` changes nginx on impera: run on his word only. The gateway's block in
   the vhost belongs to `entropy-gate` and is copied verbatim by `scripts/nginx-conf.sh`.
 - **`/sensors` is the daemon's**, so the kit's sensors page is not routed here.
+- **The kit's standard layout** (Brad, 2026-10-18: every app the same; tinykit is the reference): `app.yaml` (the
+  manifest) beside `src/`, `api/` (FastAPI on the kit's `kitapi`, pinned in `api/pyproject.toml` at the same tag as
+  `package.json`; uv only), `deploy/`, `scripts/check-site.ts`. The API answers only the kit's base routes today; it
+  never touches the pool. `deploy/hotbits-api.service` names no user and no home path (the repo is public):
+  `scripts/api-setup.sh` fills them in and installs it. Never `kit setup` or `kit nginx` here: the vhost is
+  `scripts/nginx-conf.sh`'s, with the gateway's block.
 - **No em dashes in shipped text.** US units. Plain English in commits.
 - **Git:** `main` on `tinymachines/hotbits` (PUBLIC), stage explicit paths. End commit messages with the trailer lines
   the harness gives you. Nothing private goes in: no LAN addresses, keys, or home paths. The original 2025 site is

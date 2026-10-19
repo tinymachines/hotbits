@@ -1,0 +1,9 @@
+# hotbits' manifest: what the app is, in a few plain fields (the kit's py/src/kitapi/manifest.py says what goes in
+# it). kit check holds it to src/app.config.ts; the API serves it at /api/v1/about; tinykit's Home lists it from here.
+id: hotbits
+name: hotbits
+site: https://hotbits.tinymachines.ai
+what: "Random from radioactive decay: the instrument live, its bytes drawn, six games on real decay."
+api: { port: 8170 }
+show: true
+order: 30

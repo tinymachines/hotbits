@@ -12,7 +12,7 @@
     "deploy": "kit deploy"
   },
   "dependencies": {
-    "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.18",
+    "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.23",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "0.184.0",

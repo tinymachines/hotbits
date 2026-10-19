@@ -3,7 +3,8 @@
 // and the mark; a new reader sees Ember; the Menu lists the doors; the instrument page shows a measured pool figure;
 // every one of the four views draws; each game produces a result in range with a receipt; the reference lists the
 // daemon's operations; the footer and the Menu offer a Sign in (the kit's shared account service); Your files keeps a picked
-// file on this device and a file shared from another app lands there; the app opens offline. Ends in ALL OK or a failure.
+// file on this device and a file shared from another app lands there; hotbits' own API (api/) answers the kit's base
+// routes as this app at this commit; the app opens offline. Ends in ALL OK or a failure.
 //   bun run scripts/check-site.ts [origin]      default http://127.0.0.1:4431 (scripts/check.sh starts the server)
 import puppeteer, { type Page } from "puppeteer-core";
 import { mkdtempSync as kfMkdtemp, writeFileSync as kfWrite } from "node:fs";
@@ -124,7 +125,15 @@ kfRows = [];
 for (let i = 0; i < 40 && !kfRows.some((r) => r.startsWith("shared note.txt")); i++) { await sleep(250); kfRows = await page.evaluate(() => [...document.querySelectorAll(".kfiles li .open")].map((b) => b.textContent ?? "")); }
 ok(kfRows.includes("shared note.txt"), `share: it is in Your files (${kfRows.join("; ")})`);
 
-// 6. offline
+// 6. hotbits' own API (api/, the kit's kitapi), through the same /api/ the pages use: the base routes
+const head = Bun.spawnSync(["git", "rev-parse", "--short", "HEAD"]).stdout.toString().trim();
+const getJson = (path: string) => fetch(`${origin}${path}`, { headers: { "cache-control": "no-cache" } }).then((r) => r.ok ? r.json() : { status: r.status }).catch(() => null);
+const [health, about, whoami] = await Promise.all([getJson("/api/v1/health"), getJson("/api/v1/about"), getJson("/api/v1/whoami")]);
+ok(health?.ok === true && health.app === "hotbits", `the API answers /api/v1/health (${JSON.stringify(health)})`);
+ok(about?.id === "hotbits" && about.commit === head, `/api/v1/about: ${about?.id} at ${about?.commit ?? "no answer"} (HEAD ${head}), kitapi ${about?.kitapi}`);
+ok(whoami?.signed_in === false, `/api/v1/whoami, signed out: nobody (${JSON.stringify(whoami)})`);
+
+// 7. offline
 await page.goto(`${origin}/app`, { waitUntil: "networkidle0" }); await sleep(1500);
 await page.reload({ waitUntil: "networkidle0" }); await sleep(1000);
 offline = true;
