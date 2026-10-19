@@ -9,10 +9,11 @@
     "typecheck": "tsc -b",
     "lint": "eslint . --max-warnings 0",
     "check": "scripts/check.sh",
-    "deploy": "kit deploy"
+    "deploy": "kit deploy",
+    "unit": "kit unit"
   },
   "dependencies": {
-    "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.23",
+    "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.25",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "0.184.0",

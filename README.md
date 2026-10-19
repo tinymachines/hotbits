@@ -28,7 +28,8 @@ scripts/check.sh       the kit's `kit check` with the instrument's paths passed 
                        Chrome against the live instrument (check-site.ts); ends ALL OK
 scripts/nginx-conf.sh  writes deploy/hotbits.tinymachines.ai.nginx from api-paths.ts, keeping the gateway's block
 scripts/site-setup.sh  installs that vhost and the root (sudo; Brad's go: a network change on impera)
-scripts/api-setup.sh   installs hotbits' own API's unit (deploy/hotbits-api.service, its user and path filled in), starts it
+bun run unit           the kit's `kit unit` (sudo): hotbits' own API's unit (deploy/hotbits-api.service), its user and
+                       path filled in, installed and started; no nginx
 api/                   hotbits' own API: FastAPI on the kit's kitapi, 127.0.0.1:8170 (uv run --directory api pytest)
 app.yaml               the manifest: what the app is (kit check holds it to src/app.config.ts; /api/v1/about serves it)
 bun run deploy         the kit's `kit deploy`: build + rsync to /var/www/hotbits.tinymachines.ai; refuses without a passed check on HEAD

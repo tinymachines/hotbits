@@ -27,7 +27,7 @@ path."
   manifest) beside `src/`, `api/` (FastAPI on the kit's `kitapi`, pinned in `api/pyproject.toml` at the same tag as
   `package.json`; uv only), `deploy/`, `scripts/check-site.ts`. The API answers only the kit's base routes today; it
   never touches the pool. `deploy/hotbits-api.service` names no user and no home path (the repo is public):
-  `scripts/api-setup.sh` fills them in and installs it. Never `kit setup` or `kit nginx` here: the vhost is
+  `bun run unit` (the kit's `kit unit`, sudo) fills them in, installs it and starts it. Never `kit setup` or `kit nginx` here: the vhost is
   `scripts/nginx-conf.sh`'s, with the gateway's block.
 - **No em dashes in shipped text.** US units. Plain English in commits.
 - **Git:** `main` on `tinymachines/hotbits` (PUBLIC), stage explicit paths. End commit messages with the trailer lines

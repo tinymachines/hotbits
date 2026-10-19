@@ -4,7 +4,7 @@
 # /api/v1/health. StateDirectory makes /var/lib/hotbits-api (0700) as $STATE_DIRECTORY. Logs: journalctl -u hotbits-api.
 #
 # The repo is public, so this file names no user and no home path: @USER@ and @HERE@ (the checkout) are filled in
-# by scripts/api-setup.sh, which installs the result in /etc/systemd/system. Do not `sudo cp` this file as it is,
+# by the kit's `kit unit` (bun run unit), which installs the result in /etc/systemd/system. Do not `sudo cp` this file as it is,
 # and do not run `kit setup` here (it would, and its nginx would drop the entropy gateway's block).
 
 [Unit]
