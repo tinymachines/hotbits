@@ -66,6 +66,9 @@ $(sed -n '/^# BEGIN entropy-gate/,/^# END entropy-gate/p' /etc/nginx/sites-enabl
         proxy_set_header        X-Forwarded-Proto \$scheme;
         client_max_body_size    2m;     # a file goes up in 1 MiB pieces (server/accounts/files.py)
     }
+    # /api, bare, is the app's Reference page. Without this, nginx answers it with a 301 to /api/ (its rule for a
+    # proxied prefix location ending in a slash), which lands on the API: the page never opened from a link.
+    location = /api { rewrite ^ /index.html last; }
     # the rest of /api/: hotbits' own API (api/, hotbits-api.service, the kit's kitapi), path kept
     location /api/ {
         proxy_pass              http://127.0.0.1:8170;
