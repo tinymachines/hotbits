@@ -103,7 +103,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "kitapi", git = "ssh://git@github.com/tinymachines/kit.git?subdirectory=py&rev=v0.3.27" },
+    { name = "kitapi", git = "ssh://git@github.com/tinymachines/kit.git?subdirectory=py&rev=v0.3.31" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
 
@@ -161,8 +161,8 @@ wheels = [
 
 [[package]]
 name = "kitapi"
-version = "0.3.27"
-source = { git = "ssh://git@github.com/tinymachines/kit.git?subdirectory=py&rev=v0.3.27#f686ff40c94c95b7c6c33fb018a96696f76559ff" }
+version = "0.3.31"
+source = { git = "ssh://git@github.com/tinymachines/kit.git?subdirectory=py&rev=v0.3.31#3e1963dd366676dc448325f4c8c2fad54ce90da4" }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
