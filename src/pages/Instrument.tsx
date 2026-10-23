@@ -6,7 +6,7 @@ import { ago } from "@tinymachines/kit/lib/ago";
 import { StatusTag } from "@tinymachines/kit/components/StatusTag";
 import { getMetrics, type BatteryRow, type MetricRow } from "../lib/api";
 import { compactBytes, grouped, useInstrument } from "../lib/instrument";
-import { Sparkline } from "../components/Sparkline";
+import { Sparkline } from "@tinymachines/kit/components/Sparkline";
 import { Tag } from "../components/Tag";
 
 function batteryState(r: BatteryRow): "live" | "warn" | "fail" {
