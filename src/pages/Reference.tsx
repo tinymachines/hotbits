@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { StatusTag } from "@tinymachines/kit/components/StatusTag";
 import { getOpenApi, type OpenApi } from "../lib/api";
-import { Tag, type TagState } from "../components/Tag";
+import { HealthTag, type Health } from "@tinymachines/kit/components/HealthTag";
 
 const GATEWAY = [
   { path: "/v1/health", tier: "open", what: "the gateway's own health" },
@@ -15,7 +15,7 @@ const GATEWAY = [
 /** The daemon's pool-spending paths, which nginx answers with 410 Gone on this host, naming the replacement. */
 const CLOSED = new Set(["/random/bytes", "/random/hex", "/random/integers", "/random/raw"]);
 
-const TIER: Record<string, { state: TagState; word: string }> = {
+const TIER: Record<string, { state: Health; word: string }> = {
   open: { state: "live", word: "open" }, keyed: { state: "quiet", word: "needs a key" }, closed: { state: "warn", word: "closed, 410" },
 };
 
@@ -43,7 +43,7 @@ export default function Reference() {
         <p>The public door to the fresh pool. The source makes about 75 bytes a minute for everyone put together, and this service decides who gets them: the open tier replays the archive and costs the pool nothing; the keyed tier spends it, within each key&rsquo;s budget, and refuses to invent a byte when the source is down.</p>
         <table className="hb-ledger">
           <thead><tr><th>Address</th><th>Tier</th><th>What</th></tr></thead>
-          <tbody>{GATEWAY.map((g) => <tr key={g.path}><td><code>GET {g.path}</code></td><td><Tag state={TIER[g.tier].state}>{TIER[g.tier].word}</Tag></td><td>{g.what}</td></tr>)}</tbody>
+          <tbody>{GATEWAY.map((g) => <tr key={g.path}><td><code>GET {g.path}</code></td><td><HealthTag small state={TIER[g.tier].state}>{TIER[g.tier].word}</HealthTag></td><td>{g.what}</td></tr>)}</tbody>
         </table>
       </section>
 
@@ -56,7 +56,7 @@ export default function Reference() {
             <div className="hb-scroll" tabIndex={0} role="region" aria-label="The daemon's addresses">
               <table className="hb-ledger" id="routes">
                 <thead><tr><th>Address</th><th>Tier</th><th>What</th></tr></thead>
-                <tbody>{rows.map((r) => <tr key={r.method + r.path}><td><code>{r.method} {r.path}</code></td><td><Tag state={TIER[r.tier].state}>{TIER[r.tier].word}</Tag></td><td>{r.summary}</td></tr>)}</tbody>
+                <tbody>{rows.map((r) => <tr key={r.method + r.path}><td><code>{r.method} {r.path}</code></td><td><HealthTag small state={TIER[r.tier].state}>{TIER[r.tier].word}</HealthTag></td><td>{r.summary}</td></tr>)}</tbody>
               </table>
               <p className="note">{rows.length} operations, read just now.</p>
             </div>

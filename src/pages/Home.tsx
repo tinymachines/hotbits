@@ -5,7 +5,7 @@ import { ShareButton } from "@tinymachines/kit/components/ShareButton";
 import { current, isDark, useTheme } from "@tinymachines/kit/lib/theme";
 import { app } from "@tinymachines/kit/app";
 import { compactBytes, grouped, useInstrument } from "../lib/instrument";
-import { Tag } from "../components/Tag";
+import { HealthTag } from "@tinymachines/kit/components/HealthTag";
 
 export default function Home() {
   useTheme();   // the mark follows the theme: ember on a dark one, on its plate on a light one
@@ -35,7 +35,7 @@ export default function Home() {
       <section className="panel hb-sec" aria-label="The instrument right now">
         <h2>Right now</h2>
         {!inst.asked ? <p className="note">Asking the instrument.</p>
-          : inst.down ? <p className="note"><Tag state="warn">not answering</Tag> The Geiger box is on separate hardware and this page reads it over the network; this page asks again every 30 seconds.</p>
+          : inst.down ? <p className="note"><HealthTag small state="warn">not answering</HealthTag> The Geiger box is on separate hardware and this page reads it over the network; this page asks again every 30 seconds.</p>
           : (
             <>
               <div className="hb-chips">
@@ -44,9 +44,9 @@ export default function Home() {
                 {s ? <span className="hb-chip"><b>{grouped(s.max_bytes_per_request)} bytes</b> the most one request may take</span> : null}
               </div>
               <div className="hb-chips">
-                {h ? <Tag state={h.healthy ? "live" : "warn"}>{h.healthy ? "healthy" : "not healthy"}</Tag> : null}
-                {s ? <Tag state={s.logger_service_active ? "live" : "fail"}>{s.logger_service_active ? "logger running" : "logger stopped"}</Tag> : null}
-                {s?.l1_health_ok !== undefined ? <Tag state={s.l1_health_ok ? "live" : "fail"}>{s.l1_health_ok ? "health tests passing" : "health tests failing"}</Tag> : null}
+                {h ? <HealthTag small state={h.healthy ? "live" : "warn"}>{h.healthy ? "healthy" : "not healthy"}</HealthTag> : null}
+                {s ? <HealthTag small state={s.logger_service_active ? "live" : "fail"}>{s.logger_service_active ? "logger running" : "logger stopped"}</HealthTag> : null}
+                {s?.l1_health_ok !== undefined ? <HealthTag small state={s.l1_health_ok ? "live" : "fail"}>{s.l1_health_ok ? "health tests passing" : "health tests failing"}</HealthTag> : null}
               </div>
               <p className="note">Read from the instrument {inst.answeredAt ? "just now" : ""}; the pool refills at about 75 bytes a minute for everyone put together. <a href="/instrument" onClick={onLink}>The whole board.</a></p>
             </>

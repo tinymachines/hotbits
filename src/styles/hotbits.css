@@ -16,13 +16,6 @@
   .hb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
   .hb-chip { display: inline-flex; gap: 6px; align-items: baseline; border: 1.5px solid var(--line); border-radius: 4px; padding: 6px 10px; font: 15px var(--sans); color: var(--mute); }
   .hb-chip b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .hb-tag { display: inline-flex; gap: 6px; align-items: center; border: 1.5px solid var(--line); border-radius: 4px; padding: 3px 9px; font: 600 13px var(--sans); color: var(--ink); white-space: nowrap; vertical-align: middle; }
-  .hb-tag--live { border-color: var(--c3); }
-  .hb-tag--live span { color: var(--c3); }
-  .hb-tag--warn { border-color: var(--c2); }
-  .hb-tag--warn span { color: var(--c2); }
-  .hb-tag--fail { border-color: var(--alert); color: var(--alert); }
-  .hb-tag--quiet { color: var(--mute); }
   .hb-status { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 16px; }
 
   /* readouts */

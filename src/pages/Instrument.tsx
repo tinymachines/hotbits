@@ -7,7 +7,7 @@ import { StatusTag } from "@tinymachines/kit/components/StatusTag";
 import { getMetrics, type BatteryRow, type MetricRow } from "../lib/api";
 import { compactBytes, grouped, useInstrument } from "../lib/instrument";
 import { Sparkline } from "@tinymachines/kit/components/Sparkline";
-import { Tag } from "../components/Tag";
+import { HealthTag } from "@tinymachines/kit/components/HealthTag";
 
 function batteryState(r: BatteryRow): "live" | "warn" | "fail" {
   if (r.total_failures > 0) return "fail";
@@ -50,9 +50,9 @@ export default function Instrument() {
       <p className="hb-status">
         <StatusTag kind="measured" />{" "}
         {!inst.asked ? <span className="note">asking the instrument</span>
-          : inst.down ? <Tag state="warn">not answering</Tag>
+          : inst.down ? <HealthTag small state="warn">not answering</HealthTag>
           : <>
-              {health ? <Tag state={health.healthy ? "live" : "warn"} title="the daemon's own verdict: logger running, event log fresh, pool not empty">{health.healthy ? "healthy" : "not healthy"}</Tag> : null}
+              {health ? <HealthTag small state={health.healthy ? "live" : "warn"} title="the daemon's own verdict: logger running, event log fresh, pool not empty">{health.healthy ? "healthy" : "not healthy"}</HealthTag> : null}
               {inst.heardAt ? <span className="note"> last decay event logged {ago(new Date(inst.heardAt).toISOString())}</span> : null}
             </>}
       </p>
@@ -66,7 +66,7 @@ export default function Instrument() {
 
       <section className="panel hb-sec" aria-label="The source">
         <h2>The source</h2>
-        {inst.down && hasData ? <p className="note"><Tag state="warn">stopped answering</Tag> every figure below is the last one it gave.</p> : null}
+        {inst.down && hasData ? <p className="note"><HealthTag small state="warn">stopped answering</HealthTag> every figure below is the last one it gave.</p> : null}
         <div className="hb-stats">
           <div className="stat"><p className="k">Fresh pool</p><p className="v">{stats ? compactBytes(stats.fresh_bytes) : "-"}</p><p className="note">unread bytes, exclusive to the next keyed request</p></div>
           <div className="stat"><p className="k">Consumed, all time</p><p className="v">{stats ? compactBytes(stats.consumed_bytes) : "-"}</p><p className="note">handed out through the keyed tier</p></div>
@@ -102,8 +102,8 @@ export default function Instrument() {
             <div className="hb-scroll" tabIndex={0} role="region" aria-label="The two tests">
             <table className="hb-readout">
               <tbody>
-                <tr><th>Repetition count <Tag state={cont.rct.failed_ever ? "fail" : "live"}>{cont.rct.failed_ever ? "tripped" : "passing"}</Tag></th><td className="n">{grouped(cont.rct.max_run_seen)} / {grouped(cont.rct.cutoff)}</td><td className="note">longest identical run ever seen / the cutoff</td></tr>
-                <tr><th>Adaptive proportion <Tag state={cont.apt.failed_ever ? "fail" : "live"}>{cont.apt.failed_ever ? "tripped" : "passing"}</Tag></th><td className="n">{grouped(cont.apt.position_in_window)} / {grouped(cont.apt.window_size)}</td><td className="note">position in the window / its size</td></tr>
+                <tr><th>Repetition count <HealthTag small state={cont.rct.failed_ever ? "fail" : "live"}>{cont.rct.failed_ever ? "tripped" : "passing"}</HealthTag></th><td className="n">{grouped(cont.rct.max_run_seen)} / {grouped(cont.rct.cutoff)}</td><td className="note">longest identical run ever seen / the cutoff</td></tr>
+                <tr><th>Adaptive proportion <HealthTag small state={cont.apt.failed_ever ? "fail" : "live"}>{cont.apt.failed_ever ? "tripped" : "passing"}</HealthTag></th><td className="n">{grouped(cont.apt.position_in_window)} / {grouped(cont.apt.window_size)}</td><td className="note">position in the window / its size</td></tr>
                 <tr><th>Failures, last 24 h</th><td className="n">{grouped(cont.fails_last_24h)}</td><td className="note">either test, any sample</td></tr>
                 <tr><th>Bits processed</th><td className="n">{grouped(cont.total_bits_processed)}</td><td className="note">since the stream opened</td></tr>
               </tbody>
@@ -130,7 +130,7 @@ export default function Instrument() {
                     <td className="n">{compactBytes(r.practrand_max_bytes)}</td>
                     <td className="n">{grouped(r.rabbit_pass)}/{grouped(r.rabbit_n_stats)}</td>
                     <td className="n">{grouped(r.alphabit_pass)}/{grouped(r.alphabit_n_stats)}</td>
-                    <td><Tag state={batteryState(r)}>{r.total_failures > 0 ? `${r.total_failures} failed` : r.practrand_anomalies > 1 ? `${r.practrand_anomalies} anomalies` : "clean"}</Tag></td>
+                    <td><HealthTag small state={batteryState(r)}>{r.total_failures > 0 ? `${r.total_failures} failed` : r.practrand_anomalies > 1 ? `${r.practrand_anomalies} anomalies` : "clean"}</HealthTag></td>
                   </tr>
                 ))}
               </tbody>
