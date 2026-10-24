@@ -5,7 +5,7 @@
     "": {
       "name": "hotbits",
       "dependencies": {
-        "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.49",
+        "@tinymachines/kit": "git+ssh://git@github.com/tinymachines/kit.git#v0.3.53",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "three": "0.184.0",
@@ -415,7 +415,7 @@
 
     "@tailwindcss/postcss": ["@tailwindcss/postcss@4.3.3", "", { "dependencies": { "@alloc/quick-lru": "^5.2.0", "@tailwindcss/node": "4.3.3", "@tailwindcss/oxide": "4.3.3", "postcss": "^8.5.16", "tailwindcss": "4.3.3" } }, "sha512-JTSZZGQi1AyKirbLN3azmjVzef92tcX7h+iSqPdaeStyFpGpDlKvvpxeOE8njhbUanbRwr3z8DyzhICWnMtQeg=="],
 
-    "@tinymachines/kit": ["@tinymachines/kit@git+ssh://git@github.com/tinymachines/kit.git#72a91eb1e8c1063fed7d23d70233f56e1a60170c", { "peerDependencies": { "react": "^19.1.0", "react-dom": "^19.1.0", "zustand": "^5.0.0" }, "bin": { "kit": "./bin/kit.ts" } }, "72a91eb1e8c1063fed7d23d70233f56e1a60170c"],
+    "@tinymachines/kit": ["@tinymachines/kit@git+ssh://git@github.com/tinymachines/kit.git#700220e7190b0ec8643c5edce5bf402eb8a5b03a", { "peerDependencies": { "react": "^19.1.0", "react-dom": "^19.1.0", "zustand": "^5.0.0" }, "bin": { "kit": "./bin/kit.ts" } }, "700220e7190b0ec8643c5edce5bf402eb8a5b03a"],
 
     "@trickfilm400/rollup-plugin-off-main-thread": ["@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1", "", { "dependencies": { "ejs": "^3.1.10", "json5": "^2.2.3", "magic-string": "^0.30.21", "string.prototype.matchall": "^4.0.12" } }, "sha512-/67zpWDBLV+oYAEL682s1ktXL0HgqX76f6gaVGkGnVZlBbm1zd0v4Bz8MFF2GGhoX9rvfq3KSQHubFHwa6w6/Q=="],
 
