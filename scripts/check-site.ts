@@ -50,7 +50,7 @@ await page.goto(`${origin}/instrument`, { waitUntil: "networkidle0" });
 await page.waitForFunction(() => [...document.querySelectorAll(".hb-stats .stat .v")].some((v) => /\d/.test(v.textContent ?? "")), { timeout: 30_000 }).catch(() => null);
 const pool = await page.evaluate(() => document.querySelector(".hb-stats .stat .v")?.textContent?.trim() ?? "");
 ok(/\d/.test(pool), `the instrument reads the pool from the box: "${pool}"`);
-const sparks = await count(".hb-spark path");
+const sparks = await count(".spark path");   // the kit's Sparkline (since v0.3.37)
 const batteries = await count(".hb-ledger tbody tr");
 ok(sparks >= 5 && batteries >= 1, `the day's five sparklines (${sparks}) and the battery ledger (${batteries} rows) are drawn`);
 ok(/[0-9a-f]{12}/.test(await text(".hb-hex")), `twelve seeds from the stream: ${(await text(".hb-hex")).slice(0, 25)}…`);
