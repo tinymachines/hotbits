@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "hotbits's own API: FastAPI on 127.0.0.1:8170 behind nginx (an app on @tinymachines/kit)."
 requires-python = ">=3.12"
 dependencies = [
-    "kitapi @ git+ssh://git@github.com/tinymachines/kit.git@v0.3.42#subdirectory=py",
+    "kitapi @ git+ssh://git@github.com/tinymachines/kit.git@v0.3.49#subdirectory=py",
     "uvicorn>=0.30",
 ]
 
